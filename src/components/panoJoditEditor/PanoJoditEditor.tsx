@@ -73,7 +73,7 @@ const PanoJoditEditor: FC<Props> = ({ content, onChange, readonly = false }) => 
         'bold,italic,underline,strikethrough,eraser,ul,ol,font,fontsize,paragraph,classSpan,lineHeight,superscript,subscript,file,image,video,cut,copy,paste,selectall,copyformat,hr,table,link,symbols,indent,outdent,align,brush,undo,redo,find,source,fullsize,preview,print',
       disablePlugins: 'spellcheck'
     }),
-    [readonly]
+    [navigate, readonly]
   )
 
   return <JoditEditor value={content} config={config} onBlur={onChange} />

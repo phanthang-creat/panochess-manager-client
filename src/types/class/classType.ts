@@ -9,7 +9,7 @@ interface ClassDataType {
 }
 
 interface PostClassRequestBodyType extends ClassDataType {
-    classTeachers: PostClassTeacherRequestBodyType
+    classTeachers: PostClassTeacherRequestBodyType[]
 }
 
 interface PatchClassRequestBodyType extends Partial<PostClassRequestBodyType> {}

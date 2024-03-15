@@ -11,7 +11,11 @@ function App() {
         <Router>
           <Routes>
             {routes.map((route) => (
-              <Route key={route.path} path={route.path} element={<RouteGuard route={route} />} />
+              <Route
+                key={route.path}
+                path={route.path}
+                element={<RouteGuard route={{ ...route, public: !!route.public }} />}
+              />
             ))}
             <Route path='*' element={<Navigate to='/' replace />} />
           </Routes>

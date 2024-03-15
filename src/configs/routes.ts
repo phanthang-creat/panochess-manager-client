@@ -26,12 +26,12 @@ const DashboardAuthLayout = lazy(() => import('~/layouts/dashboard/auth/AuthLayo
 
 const DashboardStatisticPage = lazy(() => import('~/pages/dashboard/statistic/StatisticPage'))
 const DashboardLoginPage = lazy(() => import('~/pages/dashboard/login/LoginPage'))
-const DashboardFooterPage = lazy(() => import('~/pages/dashboard/footer/FooterPage'))
+// const DashboardFooterPage = lazy(() => import('~/pages/dashboard/footer/FooterPage'))
 
-const DashboardHomePage = lazy(() => import('~/pages/dashboard/home/HomePage'))
+// const DashboardHomePage = lazy(() => import('~/pages/dashboard/home/HomePage'))
 const DashboardCoursePage = lazy(() => import('~/pages/dashboard/course/CoursePage'))
-const DashboardPostPage = lazy(() => import('~/pages/dashboard/post/PostPage'))
-const DashboardPostCreationPage = lazy(() => import('~/pages/dashboard/post/PostCreationPage'))
+// const DashboardPostPage = lazy(() => import('~/pages/dashboard/post/PostPage'))
+// const DashboardPostCreationPage = lazy(() => import('~/pages/dashboard/post/PostCreationPage'))
 
 
 
@@ -49,40 +49,16 @@ const routes = [
     component: DashboardLoginPage,
     public: true
   },
-  {
-    path: '/footer',
-    layout: DashboardMainLayout,
-    component: DashboardFooterPage,
-    public: false
-  },
-  {
-    path: '/home',
-    layout: DashboardMainLayout,
-    component: DashboardHomePage,
-    public: false
-  },
+  // {
+  //   path: '/home',
+  //   layout: DashboardMainLayout,
+  //   component: DashboardHomePage,
+  //   public: false
+  // },
   {
     path: '/course',
     layout: DashboardMainLayout,
     component: DashboardCoursePage,
-    public: false
-  },
-  {
-    path: '/dashboard/post',
-    layout: DashboardMainLayout,
-    component: DashboardPostPage,
-    public: false
-  },
-  {
-    path: '/dashboard/post/creation',
-    layout: DashboardMainLayout,
-    component: DashboardPostCreationPage,
-    public: false
-  },
-  {
-    path: '/dashboard/post/update/:id',
-    layout: DashboardMainLayout,
-    component: DashboardPostCreationPage,
     public: false
   },
   {
