@@ -1,5 +1,5 @@
 import { lazy } from 'react'
-import ConfigPage from '~/pages/dashboard/config/ConfigPage'
+// import ConfigPage from '~/pages/dashboard/config/ConfigPage'
 // import AccountCreationPage from '~/pages/dashboard/config/account/AccountCreationPage'
 // import AccountPage from '~/pages/dashboard/config/account/AccountPage'
 import CourseCreationPage from '~/pages/dashboard/config/course/CourseCreationPage'
@@ -49,22 +49,25 @@ const routes = [
     component: DashboardLoginPage,
     public: true
   },
-  // {
-  //   path: '/home',
-  //   layout: DashboardMainLayout,
-  //   component: DashboardHomePage,
-  //   public: false
-  // },
+  {
+    path: '/config/account',
+    layout: DashboardMainLayout,
+    component: DashboardStatisticPage,
+  },
+  {
+    path: '/config/branch',
+    layout: DashboardMainLayout,
+    component: DashboardStatisticPage,
+  },
+  {
+    path: '/config/role',
+    layout: DashboardMainLayout,
+    component: DashboardStatisticPage,
+  },
   {
     path: '/course',
     layout: DashboardMainLayout,
     component: DashboardCoursePage,
-    public: false
-  },
-  {
-    path: '/config',
-    layout: DashboardMainLayout,
-    component: ConfigPage,
     public: false
   },
   {

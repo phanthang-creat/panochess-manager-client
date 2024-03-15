@@ -1,5 +1,7 @@
 const StatisticPage = () => {
-  return <div>StatisticPage</div>
+  return <div>
+    Comming soon ...
+  </div>
 }
 
 export default StatisticPage
