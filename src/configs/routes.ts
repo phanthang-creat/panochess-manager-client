@@ -68,55 +68,55 @@ const routes = [
     public: false
   },
   {
-    path: 'config/course',
+    path: '/config/course',
     layout: DashboardMainLayout,
     component: CoursePage,
     public: false
   },
   {
-    path: 'config/course/update/:id',
+    path: '/config/course/update/:id',
     layout: DashboardMainLayout,
     component: CourseCreationPage,
     public: false
   },
   {
-    path: 'config/course/creation',
+    path: '/config/course/creation',
     layout: DashboardMainLayout,
     component: CourseCreationPage,
     public: false
   },
   {
-    path: 'config/classroom',
+    path: '/config/classroom',
     layout: DashboardMainLayout,
     component: ClassroomPage,
     public: false
   },
   {
-    path: 'config/classroom/:id',
+    path: '/config/classroom/:id',
     layout: DashboardMainLayout,
     component: ClassroomCreationPage,
     public: false
   },
   {
-    path: 'config/classroom/creation',
+    path: '/config/classroom/creation',
     layout: DashboardMainLayout,
     component: ClassroomCreationPage,
     public: false
   },
   {
-    path: 'config/product-categories',
+    path: '/config/product-categories',
     layout: DashboardMainLayout,
     component: ProductCategoryPage,
     public: false
   },
   {
-    path: 'config/product-categories/update/:id',
+    path: '/config/product-categories/update/:id',
     layout: DashboardMainLayout,
     component: ProductCategoryCreationPage,
     public: false
   },
   {
-    path: 'config/product-categories/creation',
+    path: '/config/product-categories/creation',
     layout: DashboardMainLayout,
     component: ProductCategoryCreationPage,
     public: false
