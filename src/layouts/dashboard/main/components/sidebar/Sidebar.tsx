@@ -98,31 +98,31 @@ const MENUS = [
         path: '/config/account'
       },
       {
-          key: 'config/branch',
+          key: '/config/branch',
           label: 'Chi nhánh',
           icon: <BranchesOutlined />,
           path: '/config/branch',
       },
       {
-          key: 'config/role',
+          key: '/config/role',
           label: 'Vai trò',
           icon: <BranchesOutlined />,
           path: '/config/role',
       },
       {
-          key: 'config/course',
+          key: '/config/course',
           label: 'Khóa học',
           icon: <ReadOutlined />,
           path: '/config/course',
       },
       {
-          key: 'config/product-categories',
+          key: '/config/product-categories',
           label: 'Danh mục sản phẩm',
           icon: <ReadOutlined />,
           path: '/config/product-categories',
       },
       {
-          key: 'config/classroom',
+          key: '/config/classroom',
           label: 'Lớp học',
           icon: <ReadOutlined />,
           path: '/config/classroom',
