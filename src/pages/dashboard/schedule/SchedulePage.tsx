@@ -12,7 +12,6 @@ import { useGetTeachersQuery } from '~/stores/server/teacher/teacherStore'
 import { PostClassRequestBodyType } from '~/types/class/classType'
 import { useForm } from 'antd/es/form/Form'
 import dayjs from 'dayjs'
-import { useGetClassesQuery } from '~/stores/server/class/classStore'
 import { useGetClassroomsQuery } from '~/stores/server/classroom/classroomStore'
 
 type FormType = PostClassRequestBodyType
@@ -35,12 +34,16 @@ const FORM_INITIAL_VALUES: FormType = {
     endTime: '',
     classroomId: '',
     statusId: 1,
+    classTeachers: []
 }
 
 export const SchedulePage = () => {
 
     const [selectedSlot, setSelectedSlot] = useState<SlotInfo | null>(null)
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+
+    // const [dateRange, setDateRange] = useState<[Date, Date]>([new Date(), new Date()])
+    // const [timeRange, setTimeRange] = useState<[Date, Date]>([new Date(), new Date()])
 
     const getClassStatusesQuery = useGetClasssStatusesQuery()
     const getTeachersQuery = useGetTeachersQuery()
@@ -102,10 +105,10 @@ export const SchedulePage = () => {
         },
     ]
 
-    const handleSubmit = async (values: FormType) => {
+    const handleSubmit = async () => {
     }
 
-    const clickRef = useRef(null)
+    const clickRef = useRef(null as number | null)
 
 
     useEffect(() => {
@@ -129,7 +132,9 @@ export const SchedulePage = () => {
          * this, the 'click' handler is overridden by the 'doubleClick'
          * action.
          */
-        window.clearTimeout(clickRef?.current)
+        if (clickRef.current) {
+            window.clearTimeout(clickRef.current)
+        }
         clickRef.current = window.setTimeout(() => {
             setSelectedSlot(slotInfo)
             setIsModalOpen(true)
@@ -196,7 +201,6 @@ export const SchedulePage = () => {
                 >
                     <Form.Item
                         label='Ngày'
-
                     >
                         <DatePicker.RangePicker
                             format='DD/MM/YYYY'
@@ -212,7 +216,6 @@ export const SchedulePage = () => {
                         label='Thời gian'
                     >
                         <TimePicker.RangePicker
-                        
                             format='HH:mm'
                             style={{ width: '100%' }}
                             name='endTime'
@@ -261,7 +264,6 @@ export const SchedulePage = () => {
                         <Select
                             mode='multiple'
                             allowClear
-                            
                             placeholder='Chọn giáo viên'
                             options={
                                 getTeachersQuery.data?.data.map((teacher) => ({
@@ -271,7 +273,6 @@ export const SchedulePage = () => {
                             }
                         />
                     </Form.Item>
-
 
                     <Form.Item<FormType>
                         name='statusId'
