@@ -22,11 +22,6 @@ const MENUS = [
         key: '/student',
         // icon: <UploadOutlined />,
         label: 'Danh sách học sinh'
-      },
-      {
-        key: '/dashboard/post',
-        // icon: <UploadOutlined />,
-        label: 'Bài viết'
       }
     ]
   },
@@ -43,42 +38,55 @@ const MENUS = [
   {
     key: uuidv4(),
     // icon: <UploadOutlined />,
-    label: 'Tuyển dụng',
+    label: 'Lớp học',
     children: [
       {
-        key: '/dashboard/recruitment-post',
+        key: '/schedule',
         // icon: <UploadOutlined />,
-        label: 'Bài viết tuyển dụng'
+        label: 'Danh sách lớp học'
       }
     ]
   },
+  // {
+  //   key: uuidv4(),
+  //   // icon: <UploadOutlined />,
+  //   label: 'Tuyển dụng',
+  //   children: [
+  //     {
+  //       key: '/dashboard/recruitment-post',
+  //       // icon: <UploadOutlined />,
+  //       label: 'Bài viết tuyển dụng'
+  //     }
+  //   ]
+  // },
   {
     key: uuidv4(),
     // icon: <UploadOutlined />,
     label: 'Quản lý sản phẩm',
     children: [
       {
-        key: '/dashboard/product-category',
+        key: '/order',
         // icon: <UploadOutlined />,
-        label: 'Danh mục sản phẩm'
+        label: 'Đơn hàng'
+        
       },
       {
-        key: '/dashboard/product',
+        key: '/product',
         // icon: <UploadOutlined />,
         label: 'Sản phẩm'
-      }
+      },
     ]
   },
-  {
-    key: '/dashboard/application',
-    // icon: <UploadOutlined />,
-    label: 'Đơn tuyển dụng'
-  },
-  {
-    key: '/dashboard/game',
-    // icon: <UploadOutlined />,
-    label: 'Ván đấu'
-  },
+  // {
+  //   key: '/dashboard/application',
+  //   // icon: <UploadOutlined />,
+  //   label: 'Đơn tuyển dụng'
+  // },
+  // {
+  //   key: '/dashboard/game',
+  //   // icon: <UploadOutlined />,
+  //   label: 'Ván đấu'
+  // },
   {
     key: '/config',
     label: 'Cấu hình',
@@ -106,7 +114,19 @@ const MENUS = [
           label: 'Khóa học',
           icon: <ReadOutlined />,
           path: '/config/course',
-      }
+      },
+      {
+          key: 'config/product-categories',
+          label: 'Danh mục sản phẩm',
+          icon: <ReadOutlined />,
+          path: '/config/product-categories',
+      },
+      {
+          key: 'config/classroom',
+          label: 'Lớp học',
+          icon: <ReadOutlined />,
+          path: '/config/classroom',
+      },
     ]
   }
 ]

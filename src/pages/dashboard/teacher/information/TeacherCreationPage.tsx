@@ -83,8 +83,6 @@ const TeacherCreationPage = () => {
                 branchIds: formValues.branchIds
             }
 
-            console.log(requestBody)
-
             await postTeacherMutation.mutateAsync(requestBody)
 
             notificationApi.success({

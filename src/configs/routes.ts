@@ -4,11 +4,22 @@ import ConfigPage from '~/pages/dashboard/config/ConfigPage'
 // import AccountPage from '~/pages/dashboard/config/account/AccountPage'
 import CourseCreationPage from '~/pages/dashboard/config/course/CourseCreationPage'
 import CoursePage from '~/pages/dashboard/config/course/CoursePage'
+import ProductCategoryCreationPage from '~/pages/dashboard/config/product-categories/ProductCategoriesCreation'
+import ProductCategoryPage from '~/pages/dashboard/config/product-categories/ProductCategoriesPage'
 import StudentCreationPage from '~/pages/dashboard/student/information/StudentCreationPage'
 import StudentEditPage from '~/pages/dashboard/student/information/StudentEditPage'
 import { StudentListPage } from '~/pages/dashboard/student/information/StudentListPage'
 import TeacherCreationPage from '~/pages/dashboard/teacher/information/TeacherCreationPage'
+import TeacherEditPage from '~/pages/dashboard/teacher/information/TeacherEditPage'
 import { TeacherListPage } from '~/pages/dashboard/teacher/information/TeacherListPage'
+import { SchedulePage } from '~/pages/dashboard/schedule/SchedulePage'
+import { ProductListPage } from '~/pages/dashboard/product/ProductPage'
+import { ProductCreationPage } from '~/pages/dashboard/product/ProductCreationPage'
+import { ProductEditionPage } from '~/pages/dashboard/product/ProductEditPage'
+import { OrderListPage } from '~/pages/dashboard/order/OrderPage'
+import { OrderCreationPage } from '~/pages/dashboard/order/OrderCreationPage'
+import ClassroomPage from '~/pages/dashboard/config/classroom/ClassroomPage'
+import ClassroomCreationPage from '~/pages/dashboard/config/classroom/ClassroomCreationPage'
 // Dashboard
 const DashboardMainLayout = lazy(() => import('~/layouts/dashboard/main/MainLayout'))
 const DashboardAuthLayout = lazy(() => import('~/layouts/dashboard/auth/AuthLayout'))
@@ -80,24 +91,6 @@ const routes = [
     component: ConfigPage,
     public: false
   },
-  // {
-  //   path: '/config/account',
-  //   layout: DashboardMainLayout,
-  //   component: AccountPage,
-  //   public: false
-  // },
-  // {
-  //   path: '/config/account/update/:id',
-  //   layout: DashboardMainLayout,
-  //   component: AccountCreationPage,
-  //   public: false
-  // },
-  // {
-  //   path: '/config/account/creation',
-  //   layout: DashboardMainLayout,
-  //   component: AccountCreationPage,
-  //   public: false
-  // },
   {
     path: 'config/course',
     layout: DashboardMainLayout,
@@ -115,6 +108,70 @@ const routes = [
     layout: DashboardMainLayout,
     component: CourseCreationPage,
     public: false
+  },
+  {
+    path: 'config/classroom',
+    layout: DashboardMainLayout,
+    component: ClassroomPage,
+    public: false
+  },
+  {
+    path: 'config/classroom/:id',
+    layout: DashboardMainLayout,
+    component: ClassroomCreationPage,
+    public: false
+  },
+  {
+    path: 'config/classroom/creation',
+    layout: DashboardMainLayout,
+    component: ClassroomCreationPage,
+    public: false
+  },
+  {
+    path: 'config/product-categories',
+    layout: DashboardMainLayout,
+    component: ProductCategoryPage,
+    public: false
+  },
+  {
+    path: 'config/product-categories/update/:id',
+    layout: DashboardMainLayout,
+    component: ProductCategoryCreationPage,
+    public: false
+  },
+  {
+    path: 'config/product-categories/creation',
+    layout: DashboardMainLayout,
+    component: ProductCategoryCreationPage,
+    public: false
+  },
+  {
+    path: '/product',
+    layout: DashboardMainLayout,
+    component: ProductListPage,
+    public: false
+  },
+  {
+    path: '/product/creation',
+    layout: DashboardMainLayout,
+    component: ProductCreationPage,
+    public: false
+  },
+  {
+    path: '/product/:id',
+    layout: DashboardMainLayout,
+    component: ProductEditionPage,
+    public: false
+  },
+  {
+    path: '/order',
+    layout: DashboardMainLayout,
+    component: OrderListPage,
+  },
+  {
+    path: '/order/creation',
+    layout: DashboardMainLayout,
+    component: OrderCreationPage,
   },
   { 
     path: '/student',
@@ -149,7 +206,13 @@ const routes = [
   {
     path: '/teacher/:id',
     layout: DashboardMainLayout,
-    component: StudentEditPage,
+    component: TeacherEditPage,
+    public: false
+  },
+  {
+    path: '/schedule',
+    layout: DashboardMainLayout,
+    component: SchedulePage,
     public: false
   }
 

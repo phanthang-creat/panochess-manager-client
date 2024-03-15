@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { axios } from "~/configs"
-import { PatchStudentRequestBodyType, StudentResponseDataType } from "~/types/students/studentType"
-import { GetListTeachersQueryItemResponseDataType, PostTeacherRequestBodyType } from "~/types/teachers/teacherType"
+import { GetListTeachersQueryItemResponseDataType, GetTeacherQueryItemResponseDataType, PatchTeacherRequestBodyType, PostTeacherRequestBodyType } from "~/types/teachers/teacherType"
 
 // GET /students
 const useGetTeachersQuery = () => {
@@ -14,12 +13,12 @@ const useGetTeachersQuery = () => {
     })
 }
 
-const useGetStudentByIdQuery = (id: string) => {
+const useGetTeacherByIdQuery = (id: string) => {
     return useQuery({
-        queryKey: ['[GET] /students', id],
+        queryKey: ['[GET] /teacher', id],
         queryFn: () => axios.get<
-            StudentResponseDataType
-        >(`/students/${id}`),
+            GetTeacherQueryItemResponseDataType
+        >(`/teacher/${id}`),
         select: (data) => data.data
     })
 }
@@ -36,13 +35,13 @@ const usePostTeacherMutation = () => {
 
 }
 
-const usePatchStudentMutation = () => {
+const usePatchTeacherMutation = () => {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationKey: ['[PATCH] /students'],
-        mutationFn: ({ id, data }: { id: string; data: PatchStudentRequestBodyType }) => axios.patch(`/students/${id}`, data),
+        mutationKey: ['[PATCH] /teacher'],
+        mutationFn: ({ id, data }: { id: string; data: PatchTeacherRequestBodyType }) => axios.patch(`/teacher/${id}`, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['[GET] /students'] })
+            queryClient.invalidateQueries({ queryKey: ['[GET] /teacher'] })
         }
     })
 }
@@ -57,7 +56,7 @@ const usePatchStudentMutation = () => {
 
 export {
     useGetTeachersQuery,
-    useGetStudentByIdQuery,
+    useGetTeacherByIdQuery,
     usePostTeacherMutation,
-    usePatchStudentMutation
+    usePatchTeacherMutation
 }

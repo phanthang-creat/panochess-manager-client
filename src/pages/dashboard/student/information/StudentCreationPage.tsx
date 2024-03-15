@@ -14,7 +14,6 @@ import { PostStudentRequestBodyType } from '~/types/students/studentType'
 import { useGetGenderQuery } from '~/stores/server/gender/genderStore'
 import { useGetBranchQuery } from '~/stores/server/branch/branchStore'
 import { PostStudentParentRequestBodyType, StudentParentType } from '~/types/students/studentParentType'
-// import { usePostStudentParentMutation } from '~/stores/server/student/studentParentStore'
 
 type FormType = PostStudentRequestBodyType
 
@@ -64,9 +63,6 @@ const StudentCreationPage = () => {
     const getBranchesQuery = useGetBranchQuery()
     // const postStudentParentMutation = usePostStudentParentMutation()
     const postUploadFilesMutation = usePostUploadFilesMutation()
-    // const getStudentByIdQuery = useGetStudentByIdQuery(
-    //     id ?? '',
-    // )
     const postStudentMutation = usePostStudentMutation()
 
     // States
@@ -86,6 +82,8 @@ const StudentCreationPage = () => {
             return null
         }
     }
+
+    // before unload or out of page
 
     const handleSubmit = async () => {
         try {
@@ -411,14 +409,16 @@ const StudentCreationPage = () => {
                 </div>
             </Form>
 
-            <Button
-                type='primary'
-                className='self-end'
-                loading={postStudentMutation.isPending || postUploadFilesMutation.isPending}
-                onClick={() => form.submit()}
-            >
-                Hoàn thành
-            </Button>
+            {/* Button submit, cancel */}
+            <div className='mt-8'>
+                <Button type='primary' onClick={() => form.submit()} className='mr-4'>
+                    Lưu
+                </Button>
+                <Button type='default' onClick={() => navigate('/student')}>
+                    Hủy
+                </Button>
+            </div>
+
         </div>
     )
 }

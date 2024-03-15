@@ -8,18 +8,19 @@ import { usePostUploadFilesMutation } from '~/stores/server/fileUploadStore'
 import { useGetStudentTitlesQuery } from '~/stores/server/student/studentTitleStore'
 import { useGetStudentStatusesQuery } from '~/stores/server/student/studentStatusStore'
 import { useGetCoursesQuery } from '~/stores/server/course/courseStore'
-import { useGetStudentByIdQuery, usePatchStudentMutation, usePostStudentMutation } from '~/stores/server/student/studentStore'
-import { PostStudentRequestBodyType } from '~/types/students/studentType'
+import { useGetStudentByIdQuery, usePatchStudentMutation } from '~/stores/server/student/studentStore'
+import { PatchStudentRequestBodyType } from '~/types/students/studentType'
 import { useGetGenderQuery } from '~/stores/server/gender/genderStore'
 import { useGetBranchQuery } from '~/stores/server/branch/branchStore'
-import { PostStudentParentRequestBodyType, StudentParentType } from '~/types/students/studentParentType'
+import { PatchStudentParentRequestBodyType } from '~/types/students/studentParentType'
+import { usePatchStudentParentMutation } from '~/stores/server/student/studentParentStore'
 // import { usePostStudentParentMutation } from '~/stores/server/student/studentParentStore'
 
-type FormType = PostStudentRequestBodyType
+type FormType = PatchStudentRequestBodyType
 
-type ParentFormType = PostStudentParentRequestBodyType
+type ParentFormType = PatchStudentParentRequestBodyType
 
-const FORM_INITIAL_PARENT_VALUES: PostStudentParentRequestBodyType = {
+const FORM_INITIAL_PARENT_VALUES: PatchStudentParentRequestBodyType = {
     motherName: '',
     motherPhone: '',
     motherEmail: '',
@@ -28,10 +29,9 @@ const FORM_INITIAL_PARENT_VALUES: PostStudentParentRequestBodyType = {
     fatherEmail: '',
     address: '',
     description: '',
-    // branchId: 1
 }
 
-const FORM_INITIAL_VALUES: PostStudentRequestBodyType = {
+const FORM_INITIAL_VALUES: PatchStudentRequestBodyType = {
     name: '',
     titleId: 1,
     statusId: 1,
@@ -45,7 +45,6 @@ const FORM_INITIAL_VALUES: PostStudentRequestBodyType = {
     genderId: 1,
     parentId: '',
     branchId: 2,
-    parent: FORM_INITIAL_PARENT_VALUES
 }
 
 const StudentEditPage = () => {
@@ -66,8 +65,8 @@ const StudentEditPage = () => {
     const getStudentByIdQuery = useGetStudentByIdQuery(
         id ?? '',
     )
-    const postStudentMutation = usePostStudentMutation()
     const patchStudentMutation = usePatchStudentMutation()
+    const patchStudentParentMutation = usePatchStudentParentMutation()
 
     // States
     const [imageUrl, setImageUrl] = useState<string | null>(null)
@@ -89,23 +88,7 @@ const StudentEditPage = () => {
 
     const handleSubmit = async () => {
         try {
-
-            const studentParentFormValues = parentForm.getFieldsValue()
-
             const formValues = form.getFieldsValue()
-
-            const studentParentRequestBody: StudentParentType = {
-                motherName: studentParentFormValues.motherName,
-                motherPhone: studentParentFormValues.motherPhone,
-                motherEmail: studentParentFormValues.motherEmail,
-                fatherName: studentParentFormValues.fatherName,
-                fatherPhone: studentParentFormValues.fatherPhone,
-                fatherEmail: studentParentFormValues.fatherEmail,
-                address: studentParentFormValues.address,
-                description: studentParentFormValues.description,
-            }
-
-            // const parentId = await postStudentParentMutation.mutateAsync(studentParentRequestBody)
 
             const dataImageUrl = imageUrl ? await handleUploadFile(imageUrl as unknown as File) : null
 
@@ -122,21 +105,51 @@ const StudentEditPage = () => {
                 branchId: formValues.branchId,
                 courseId: formValues.courseId,
                 description: formValues.description,
-                parent: studentParentRequestBody
             }
 
-            id
-                ? await patchStudentMutation.mutateAsync({
-                    id,
-                    data: requestBody
-                })
-                : await postStudentMutation.mutateAsync(requestBody)
+            await patchStudentMutation.mutateAsync({
+                id : id ?? '',
+                data: requestBody
+            })
+                
 
             notificationApi.success({
                 message: 'Thao tác thành công'
             })
 
-            return navigate('/students')
+            return navigate('/student')
+        } catch (error) {
+            return notificationApi.error({
+                message: 'Thao tác thất bại'
+            })
+        }
+    }
+
+    const handleStudentParentSubmit = async () => {
+        try {
+            const studentParentFormValues = parentForm.getFieldsValue()
+
+            const studentParentRequestBody: PatchStudentParentRequestBodyType = {
+                motherName: studentParentFormValues.motherName ?? null,
+                motherPhone: studentParentFormValues.motherPhone ?? null,
+                motherEmail: studentParentFormValues.motherEmail ?? null,
+                fatherName: studentParentFormValues.fatherName ?? null,
+                fatherPhone: studentParentFormValues.fatherPhone ?? null,
+                fatherEmail: studentParentFormValues.fatherEmail ?? null,
+                address: studentParentFormValues.address ?? null,
+                description: studentParentFormValues.description ?? null,
+            }
+
+            await patchStudentParentMutation.mutateAsync({
+                id: getStudentByIdQuery.data?.parentId ?? '',
+                data: studentParentRequestBody
+            })
+
+            notificationApi.success({
+                message: 'Thao tác thành công'
+            })
+
+            return navigate('/student')
         } catch (error) {
             return notificationApi.error({
                 message: 'Thao tác thất bại'
@@ -331,7 +344,17 @@ const StudentEditPage = () => {
                         />
                     </Form.Item>
 
+                    <Button
+                        type='primary'
+                        className='col-span-2 w-full justify-center'
+                        loading={patchStudentMutation.isPending}
+                        onClick={() => form.submit()}
+                    >
+                        Lưu
+                    </Button>
+
                 </div>
+
                 <div
                     className='grid grid-flow-row gap-4 grid-cols-1'
                 >
@@ -342,6 +365,7 @@ const StudentEditPage = () => {
                         />
                     </Form.Item>
                 </div>
+                
             </Form>
 
             <Form
@@ -422,17 +446,31 @@ const StudentEditPage = () => {
                     >
                         <Input placeholder='Địa chỉ' />
                     </Form.Item>
+
+                    <Button 
+                        type='primary' 
+                        className='col-span-2 w-full justify-center'
+                        loading={patchStudentParentMutation.isPending}
+                        onClick={() => handleStudentParentSubmit()}
+                    >
+                        Lưu
+                    </Button>
                 </div>
             </Form>
 
-            <Button
-                type='primary'
-                className='self-end'
-                loading={postStudentMutation.isPending || patchStudentMutation.isPending}
-                onClick={() => form.submit()}
+            {/* Study History */}
+            <div
+                className='grid grid-flow-row gap-4 grid-cols-1 w-full mt-8'
             >
-                Hoàn thành
-            </Button>
+                <div
+                    className='grid grid-flow-row gap-4 grid-cols-1 bg-white p-4 rounded-md shadow-md'
+                >
+                    <h1 className='text-lg font-medium mb-4'>
+                        Lịch sử học tập
+                    </h1>
+                </div>
+
+            </div>
         </div>
     )
 }

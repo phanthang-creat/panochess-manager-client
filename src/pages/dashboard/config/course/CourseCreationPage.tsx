@@ -30,25 +30,8 @@ const CourseCreationPage = () => {
     // })
     // const postAccountMutation = usePostAccountMutation()
     // const patchAccountMutation = usePatchAccountMutation()
-    const postCoureMutation = usePostCourseMutation()
+    const postCourseMutation = usePostCourseMutation()
     const patchCourseMutation = usePatchCourseMutation()
-
-    // States
-
-    //   Methods
-    //   const handleUploadFile = async (file: File) => {
-    //     try {
-    //       const formData = new FormData()
-    //       formData.append('files', file)
-    //       const uploadFileResponse = await postUploadFilesMutation.mutateAsync(formData)
-    //       return uploadFileResponse.data[0].path
-    //     } catch (error) {
-    //       notificationApi.error({
-    //         message: 'Thao tác thất bại'
-    //       })
-    //       return null
-    //     }
-    //   }
 
     const handleSubmit = async () => {
         try {
@@ -76,7 +59,7 @@ const CourseCreationPage = () => {
                     description: formValues.description,
                     status: formValues.status ? 1 : 0
                 }
-                await postCoureMutation.mutateAsync(requestBody)
+                await postCourseMutation.mutateAsync(requestBody)
             }
 
             notificationApi.success({
@@ -123,7 +106,7 @@ const CourseCreationPage = () => {
 
                 <Form.Item<PostCourseRequestBodyType>
                     name='name'
-                    label='name'
+                    label='Tên khóa học'
                     rules={[
                         { required: true, type: 'string', transform: (value) => value.trim(), message: 'Vui lòng nhập tên khóa học' }
                     ]}
@@ -182,7 +165,7 @@ const CourseCreationPage = () => {
             <Button
                 type='primary'
                 className='self-start'
-                loading={postCoureMutation.isPending || patchCourseMutation.isPending}
+                loading={postCourseMutation.isPending || patchCourseMutation.isPending}
                 onClick={() => form.submit()}
             >
                 Hoàn thành

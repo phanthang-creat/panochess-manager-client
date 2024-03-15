@@ -7,6 +7,12 @@ interface MetaResponseDataType {
     hasNextPage: boolean
 }
 
+interface PageOptionsType {
+    page: number
+    take: number
+}
+
 export type {
-    MetaResponseDataType
+    MetaResponseDataType,
+    PageOptionsType
 }

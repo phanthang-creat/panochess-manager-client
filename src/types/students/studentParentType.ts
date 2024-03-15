@@ -1,12 +1,12 @@
 interface StudentParentType {
-    fatherName: string
-    fatherPhone: string
-    fatherEmail: string
-    motherName: string
-    motherPhone: string
-    motherEmail: string
-    address: string
-    description: string
+    fatherName: string | null,
+    fatherPhone: string | null
+    fatherEmail: string | null
+    motherName: string | null
+    motherPhone: string | null
+    motherEmail: string | null
+    address: string | null
+    description: string | null
 }
 
 interface GetStudentParentQueryItemResponseDataType extends StudentParentType{

@@ -21,7 +21,7 @@ interface GetTeacherQueryItemResponseDataType extends TeacherDataType {
     id: string
     createdAt: string
     updatedAt: string
-    branches: Array<TeacherBranchType> | null
+    teacherBranches: Array<TeacherBranchType> | null
     gender: GetGenderQueryItemResponseDataType
 }
 
@@ -34,9 +34,14 @@ interface PostTeacherRequestBodyType extends TeacherDataType {
     branchIds: Array<number> | null
 }
 
+interface PatchTeacherRequestBodyType extends Partial<TeacherDataType> {
+    branchIds: Array<number> | null
+}
+
 export type {
     TeacherDataType,
     GetTeacherQueryItemResponseDataType,
     PostTeacherRequestBodyType,
-    GetListTeachersQueryItemResponseDataType
+    GetListTeachersQueryItemResponseDataType,
+    PatchTeacherRequestBodyType
 }
