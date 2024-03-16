@@ -1,4 +1,8 @@
-import { PostClassTeacherRequestBodyType } from "./classTeacherType"
+// import { PostClassTeacherRequestBodyType } from "./classTeacherType"
+
+import { GetClassroomQueryItemResponseDataType } from "../classroom/classroomType"
+import { GetClassStatusQueryItemResponseDataType } from "./classStatusType"
+import { GetClassTeacherQueryItemResponseDataType } from "./classTeacherType"
 
 interface ClassDataType {
     startTime: string
@@ -8,14 +12,26 @@ interface ClassDataType {
     description?: string
 }
 
+interface GetClassQueryItemResponseDataType extends ClassDataType {
+    id: string
+    classroom: GetClassroomQueryItemResponseDataType
+    classTeachers: GetClassTeacherQueryItemResponseDataType[]
+    classStatus: GetClassStatusQueryItemResponseDataType
+    createdAt: string
+    updatedAt: string
+}
+
 interface PostClassRequestBodyType extends ClassDataType {
-    classTeachers: PostClassTeacherRequestBodyType[]
+    classTeachers: {
+        teacherId: string
+    }[]
 }
 
 interface PatchClassRequestBodyType extends Partial<PostClassRequestBodyType> {}
 
 export type {
     ClassDataType,
+    GetClassQueryItemResponseDataType,
     PostClassRequestBodyType,
     PatchClassRequestBodyType
 }

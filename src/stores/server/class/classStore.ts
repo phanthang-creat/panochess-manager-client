@@ -1,13 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { axios } from "~/configs";
-import { GetClassStatusQueryItemResponseDataType } from "~/types/class/classStatusType";
-import { PatchClassRequestBodyType, PostClassRequestBodyType } from "~/types/class/classType";
+import { GetClassQueryItemResponseDataType, PatchClassRequestBodyType, PostClassRequestBodyType } from "~/types/class/classType";
 
 //GET /class
 const useGetClassesQuery = () => {
     return useQuery({
         queryKey: ['[GET] /class'],
-        queryFn: () => axios.get<Array<GetClassStatusQueryItemResponseDataType>>('/class'),
+        queryFn: () => axios.get<Array<GetClassQueryItemResponseDataType>>('/class'),
         select: (data) => data.data
     })
 }
