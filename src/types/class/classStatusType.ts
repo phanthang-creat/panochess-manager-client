@@ -3,7 +3,7 @@ interface ClassStatusDataType {
 }
 
 interface GetClassStatusQueryItemResponseDataType extends ClassStatusDataType {
-    id: string
+    id: number
 }
 
 export type {

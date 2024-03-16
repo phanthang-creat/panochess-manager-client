@@ -1,25 +1,61 @@
-import { Calendar, SlotInfo, dateFnsLocalizer } from 'react-big-calendar'
+import { Calendar, Culture, DateLocalizer, SlotInfo, Views, dateFnsLocalizer } from 'react-big-calendar'
 import format from 'date-fns/format'
 import parse from 'date-fns/parse'
 import startOfWeek from 'date-fns/startOfWeek'
 import getDay from 'date-fns/getDay'
-import enUS from 'date-fns/locale/en-US'
+import { vi } from 'date-fns/locale/vi'
+// import en from 'date-fns/locale/en-US'
 import './SchedulePage.scss'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { DatePicker, Form, Input, Modal, Select, TimePicker } from 'antd'
+import { DatePicker, Form, Input, Modal, Select } from 'antd'
 import { useGetClasssStatusesQuery } from '~/stores/server/class/classStatusStore'
 import { useGetTeachersQuery } from '~/stores/server/teacher/teacherStore'
-import { PostClassRequestBodyType } from '~/types/class/classType'
-import { useForm } from 'antd/es/form/Form'
-import dayjs from 'dayjs'
+import { GetClassQueryItemResponseDataType, PatchClassRequestBodyType, PostClassRequestBodyType } from '~/types/class/classType'
+import dayjs, { Dayjs } from 'dayjs'
 import { useGetClassroomsQuery } from '~/stores/server/classroom/classroomStore'
+import { useGetClassesQuery, usePatchClassMutation, usePostClassMutation } from '~/stores/server/class/classStore'
+import useNotification from 'antd/es/notification/useNotification'
+import { Day } from 'node_modules/date-fns/types'
+// import FormItem from 'antd/es/form/FormItem'
+import buddhistEra from 'dayjs/plugin/buddhistEra';
+import viPicker from 'antd/es/date-picker/locale/vi_VN'
+import { compareArrays } from '~/utils/compareArrays'
 
-type FormType = PostClassRequestBodyType
+dayjs.extend(buddhistEra)
 
-const locales = {
-    'en-US': enUS,
+interface FormType {
+    startTime: Dayjs
+    endTime: Dayjs
+    classroomId: string
+    statusId: number
+    classTeachers: string[]
+    description?: string
 }
 
+const locales = {
+    'vi': vi
+    // 'en-US': en,
+}
+
+const buddhistLocale: typeof viPicker = {
+    ...viPicker,
+    lang: {
+        ...viPicker.lang,
+        placeholder: 'Chọn ngày',
+        yearPlaceholder: 'Chọn năm',
+        quarterPlaceholder: 'Chọn quý',
+        monthPlaceholder: 'Chọn tháng',
+        weekPlaceholder: 'Chọn tuần',
+        rangeYearPlaceholder: ['Năm bắt đầu', 'Năm kết thúc'],
+        rangeQuarterPlaceholder: ['Quý bắt đầu', 'Quý kết thúc'],
+        rangeMonthPlaceholder: ['Tháng bắt đầu', 'Tháng kết thúc'],
+        rangeWeekPlaceholder: ['Tuần bắt đầu', 'Tuần kết thúc'],
+        rangePlaceholder: ['Ngày bắt đầu', 'Ngày kết thúc'],
+    },
+    timePickerLocale: {
+        placeholder: 'Chọn giờ'
+    }
+}
 
 const localizer = dateFnsLocalizer({
     format,
@@ -29,199 +65,286 @@ const localizer = dateFnsLocalizer({
     locales,
 })
 
-const FORM_INITIAL_VALUES: FormType = {
-    startTime: '',
-    endTime: '',
-    classroomId: '',
-    statusId: 1,
-    classTeachers: []
+class EventType {
+    constructor(title: string, allDay: boolean, start: Date, end: Date, resource?: GetClassQueryItemResponseDataType) {
+        this.title = title
+        this.allDay = allDay ?? false
+        this.start = start
+        this.end = end,
+        this.resource = resource
+    }
+
+    title: string
+    allDay: boolean = false
+    start: Date
+    end: Date
+    resource?: GetClassQueryItemResponseDataType
 }
 
 export const SchedulePage = () => {
 
-    const [selectedSlot, setSelectedSlot] = useState<SlotInfo | null>(null)
+    const [notificationApi, notificationContextHolder] = useNotification()
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
-
-    // const [dateRange, setDateRange] = useState<[Date, Date]>([new Date(), new Date()])
-    // const [timeRange, setTimeRange] = useState<[Date, Date]>([new Date(), new Date()])
-
+    const [events, setEvents] = useState<EventType[]>([])
+    const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null)
     const getClassStatusesQuery = useGetClasssStatusesQuery()
     const getTeachersQuery = useGetTeachersQuery()
     const getClassroomQuery = useGetClassroomsQuery()
+    const postClassMutation = usePostClassMutation()
+    const patchClassMutation = usePatchClassMutation()
+    const getClassMutation = useGetClassesQuery()
 
-    const [form] = useForm<FormType>()
-
-    useEffect(() => {
-        form.setFieldsValue(FORM_INITIAL_VALUES)
-    }, [form])
-
-    const myEventsList = [
-        {
-            title: 'All Day Event very long title',
-            allDay: true,
-            start: new Date(2024, 3, 0),
-            end: new Date(2024, 3, 1),
-        },
-        {
-            title: 'Long Event',
-            start: new Date(2024, 3, 7),
-            end: new Date(2024, 3, 10),
-        },
-
-        {
-            title: 'DTS STARTS',
-            start: new Date(2024, 2, 13, 0, 0, 0),
-            end: new Date(2024, 2, 20, 0, 0, 0),
-        },
-
-        {
-            title: 'DTS ENDS',
-            start: new Date(2024, 10, 6, 0, 0, 0),
-            end: new Date(2024, 10, 13, 0, 0, 0),
-        },
-
-        {
-            title: 'Some Event',
-            start: new Date(2024, 3, 9, 0, 0, 0),
-            end: new Date(2024, 3, 9, 0, 0, 0),
-        },
-        {
-            title: 'Conference',
-            start: new Date(2024, 3, 11),
-            end: new Date(2024, 3, 13),
-            desc: 'Big conference for important people',
-        },
-        {
-            title: 'Meeting',
-            start: new Date(2024, 3, 12, 10, 30, 0, 0),
-            end: new Date(2024, 3, 12, 12, 30, 0, 0),
-            desc: 'Pre-meeting meeting, to prepare for the meeting',
-        },
-        {
-            title: 'Lunch',
-            start: new Date(2024, 3, 12, 12, 0, 0, 0),
-            end: new Date(2024, 3, 12, 13, 0, 0, 0),
-            desc: 'Power lunch',
-        },
-    ]
+    const [form] = Form.useForm<FormType>()
 
     const handleSubmit = async () => {
+        const formValues = form.getFieldsValue()
+
+        const listTeachers = formValues.classTeachers.map((teacher) => {
+            return {
+                teacherId: teacher
+            }
+        })
+
+        if (selectedEvent) {
+            if (!selectedEvent.resource) {
+                return notificationApi.error({
+                    message: 'Thao tác thất bại'
+                })
+            }
+            // Update
+            const requestBody: PatchClassRequestBodyType = {
+                // compare with the previous start time by timestamp
+                startTime: formValues.startTime.unix() !== (selectedEvent.start.getTime() / 1000) ? formValues.startTime.toString() : undefined,
+                endTime: formValues.endTime.unix() !== (selectedEvent.end.getTime() / 1000) ? formValues.endTime.toString() : undefined,
+                classroomId: formValues.classroomId !== selectedEvent.resource.classroom.id ? formValues.classroomId : undefined,
+                statusId: formValues.statusId !== selectedEvent.resource.classStatus.id ? formValues.statusId : undefined,
+                // compare with the previous list of teachers
+                classTeachers: compareArrays(
+                    listTeachers.map((teacher) => teacher.teacherId),
+                    selectedEvent.resource.classTeachers.map((teacher) => teacher.teacher.id)) ? undefined : listTeachers, 
+            }
+
+            for (const key in requestBody) {
+                if (requestBody[key as keyof PatchClassRequestBodyType] === undefined) {
+                    delete requestBody[key as keyof PatchClassRequestBodyType]
+                }
+            }
+
+            if (Object.keys(requestBody).length === 0) {
+                setIsModalOpen(false)
+                return notificationApi.info({
+                    message: 'Không có thay đổi'
+                })
+            }
+
+            try {
+                await patchClassMutation.mutateAsync({
+                    id: selectedEvent.resource?.id || '',
+                    requestBody
+                })
+                setIsModalOpen(false)
+                return notificationApi.success({
+                    message: 'Cập nhật thành công'
+                })
+            } catch (error) {
+                return notificationApi.error({
+                    message: 'Cập nhật thất bại'
+                })
+            }
+        } else {
+            const requestBody: PostClassRequestBodyType = {
+                startTime: formValues.startTime.toString(),
+                endTime: formValues.endTime.toString(),
+                classroomId: formValues.classroomId,
+                statusId: formValues.statusId,
+                classTeachers: listTeachers
+            }
+
+            try {
+                await postClassMutation.mutateAsync(requestBody)
+                setIsModalOpen(false)
+                return notificationApi.success({
+                    message: 'Thao tác thành công'
+                })
+            } catch (error) {
+                return notificationApi.error({
+                    message: 'Thao tác thất bại'
+                })
+            }
+        }
     }
 
-    const clickRef = useRef(null as number | null)
+    const onSelectEvent = (event: EventType) => {
+        setSelectedEvent(event)
+        const formValues = {
+            startTime: dayjs(event.start),
+            endTime: dayjs(event.end),
+            classroomId: event.resource?.classroom.id || '', // Ensure classroomId is always a string
+            statusId: event.resource?.classStatus.id || 1, // Ensure statusId is always a number
+            classTeachers: event.resource?.classTeachers.map((teacher) => teacher.teacher.id) || [],
+            description: event.resource?.description || ''
+        }
 
+        form.setFieldsValue(formValues)
+        setIsModalOpen(true)
+    }
+
+    const formats = useMemo(() => ({
+        dateFormat: 'dd',
+        dayFormat: (date: Date, culture?: Culture, localizer?: DateLocalizer) => {
+            return (vi.localize.day(date.getDay() as Day, { width: 'short' })) + ' ' + localizer?.format(date, 'dd/MM', culture)
+        },
+        dayRangeHeaderFormat: ({ start, end }: { start: Date, end: Date }, culture?: Culture, localizer?: DateLocalizer) => {
+            const s = localizer?.format(start, 'dd/MM/yyyy', culture)
+            const e = localizer?.format(end, 'dd/MM/yyyy', culture)
+            return `${s} - ${e}`
+        },
+    }), [])
+
+    const clickRef = useRef(0)
 
     useEffect(() => {
-        /**
-         * What Is This?
-         * This is to prevent a memory leak, in the off chance that you
-         * teardown your interface prior to the timed method being called.
-         */
         return () => {
             if (clickRef.current) {
-                window.clearTimeout(clickRef.current as number)
+                window.clearTimeout(clickRef.current)
             }
         }
     }, [])
 
+    useEffect(() => {
+        if (getClassMutation.data) {
+            const events = getClassMutation.data.map((item) => {
+                return new EventType(
+                    `${item.classroom.name} - ${item.classTeachers.map((teacher) => teacher.teacher.name).join(', ')} - ${item.classStatus.name}`,
+                    false,
+                    new Date(item.startTime),
+                    new Date(item.endTime),
+                    item
+                )
+            })
+            setEvents(events)
+        }
+    }, [getClassMutation.data])
+
+    //onSelectSlot
     const onSelectSlot = useCallback((slotInfo: SlotInfo) => {
-        /**
-         * Here we are waiting 250 milliseconds (use what you want) prior to firing
-         * our method. Why? Because both 'click' and 'doubleClick'
-         * would fire, in the event of a 'doubleClick'. By doing
-         * this, the 'click' handler is overridden by the 'doubleClick'
-         * action.
-         */
+        // form.resetFields()
         if (clickRef.current) {
             window.clearTimeout(clickRef.current)
         }
         clickRef.current = window.setTimeout(() => {
-            setSelectedSlot(slotInfo)
+            if (slotInfo.start.toLocaleDateString() < new Date().toLocaleDateString()) {
+                return notificationApi.error({
+                    message: 'Không thể tạo lịch học cho ngày đã qua'
+                })
+            }
+            setSelectedEvent(null)
+            form.setFieldsValue({
+                startTime: dayjs(slotInfo.start),
+                endTime: dayjs(slotInfo.end),
+                classroomId: '',
+                statusId: 1,
+                classTeachers: []
+            })
             setIsModalOpen(true)
         }, 250)
-    }, [])
-
-    // const onSelecting = useCallback((range: unknown) => {
-    //     /**
-    //      * Here we are waiting 250 milliseconds (use what you want) prior to firing
-    //      * our method. Why? Because both 'click' and 'doubleClick'
-    //      * would fire, in the event of a 'doubleClick'. By doing
-    //      * this, the 'click' handler is overridden by the 'doubleClick'
-    //      * action.
-    //      */
-    //     window.clearTimeout(clickRef?.current)
-    //     clickRef.current = window.setTimeout(() => {
-    //         console.log('onSelecting range', range)
-    //     }, 250)
-    // }, [])
+    }, [
+        notificationApi, form
+    ])
 
     const defaultDate = useMemo(() => new Date(), [])
 
     return (
         <div>
+            {notificationContextHolder}
             <Calendar
-                view='week'
+                // view='week'
+                defaultView={Views.WEEK}
                 onView={() => { }} // This is a dummy function to prevent the warning
                 defaultDate={defaultDate}
                 localizer={localizer}
-                events={myEventsList}
-                startAccessor="start"
-                endAccessor="end"
+                events={events}
+                // startAccessor="start"="ignoreEvents"
+                // endAccessor="end"
                 style={{ height: 800 }}
-                // onSelecting={
-                //     onSelecting
-                // }
+                culture={'vi'}
+                dayPropGetter={(date) => {
+                    // Disable from last day
+                    if (date.toLocaleDateString() < new Date().toLocaleDateString()) {
+                        return {
+                            className: 'bg-gray-100'
+                        }
+                    } else {
+                        return {
+                            className: ''
+                        }
+                    }
+                }}
+                onSelectEvent={onSelectEvent}
                 onSelectSlot={
                     onSelectSlot
                 }
                 selectable
+                formats={formats}
+
             />
             {/* Create Event Modal */}
             <Modal
-                title='Thêm mới lịch học'
-                onOk={() => { }}
+                title={selectedEvent ? 'Cập nhật lịch học' : 'Tạo lịch học'}
+                onOk={handleSubmit}
                 onCancel={() => {
                     setIsModalOpen(false)
+                    setSelectedEvent(null)
                 }}
                 okText='Lưu'
                 cancelText='Hủy'
                 open={isModalOpen}
                 maskClosable={false}
                 destroyOnClose={true}
-                width={
-                    800
-                }
+                width={800}
             >
                 <Form
                     form={form}
-                    initialValues={FORM_INITIAL_VALUES}
                     layout='vertical'
                     onFinish={handleSubmit}
                     className='grid grid-cols-3 grid-flow-row gap-x-4'
                 >
-                    <Form.Item
-                        label='Ngày'
-                    >
-                        <DatePicker.RangePicker
-                            format='DD/MM/YYYY'
-                            showTime
-                            style={{ width: '100%' }}
-                            defaultValue={
-                                [selectedSlot?.start ? dayjs(selectedSlot.start) : null, selectedSlot?.end ? dayjs(selectedSlot.end) : null]
+
+                    <Form.Item<FormType>
+                        name='startTime'
+                        label='Thời gian bắt đầu'
+                        rules={[
+                            {
+                                required: true,
+                                type: 'string',
+                                transform: (value) => value.trim(),
+                                message: 'Vui lòng chọn thời gian'
                             }
+                        ]}
+                    >
+                        <DatePicker
+                            // defaultValue={dayjs(selectedSlot?.start)} // Set the default date
+                            showTime
+                            locale={buddhistLocale}
                         />
                     </Form.Item>
 
-                    <Form.Item
-                        label='Thời gian'
-                    >
-                        <TimePicker.RangePicker
-                            format='HH:mm'
-                            style={{ width: '100%' }}
-                            name='endTime'
-                            defaultValue={
-                                [selectedSlot?.start ? dayjs(selectedSlot.start) : null, selectedSlot?.end ? dayjs(selectedSlot.end) : null]
+                    <Form.Item<FormType>
+                        name='endTime'
+                        label='Thời gian kết thúc'
+                        rules={[
+                            {
+                                required: true,
+                                type: 'string',
+                                transform: (value) => value.trim(),
+                                message: 'Vui lòng chọn thời gian'
                             }
+                        ]}
+                    >
+                        <DatePicker
+                            // defaultValue={dayjs(selectedSlot?.end)}
+                            showTime
+                            locale={buddhistLocale}
                         />
                     </Form.Item>
 
@@ -249,8 +372,8 @@ export const SchedulePage = () => {
                         />
                     </Form.Item>
 
-                    <Form.Item
-                        name='teacherIds'
+                    <Form.Item<FormType>
+                        name='classTeachers'
                         label='Giáo viên'
                         className='col-span-3'
                         rules={[
@@ -298,21 +421,18 @@ export const SchedulePage = () => {
                         />
                     </Form.Item>
 
-                    <Form.Item
+                    <Form.Item<FormType>
                         name='description'
                         label='Ghi chú'
                         className='col-span-2'
                     >
-                        <Input 
-                            placeholder='Ghi chú' 
+                        <Input
+                            placeholder='Ghi chú'
                             style={{ width: '100%' }}
                         />
                     </Form.Item>
-
                 </Form>
-                
             </Modal>
-
         </div>
     )
 }
