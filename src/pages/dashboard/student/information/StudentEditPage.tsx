@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Button, Form, Input, InputNumber, Select, Upload, notification } from 'antd'
+import { Button, Form, Input, InputNumber, Select, Tag, TreeSelect, Upload, notification } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { generateSlug, handleBeforeUpload, handleChangeUploadImage } from '~/utils'
 import { usePostUploadFilesMutation } from '~/stores/server/fileUploadStore'
@@ -14,6 +14,8 @@ import { useGetGenderQuery } from '~/stores/server/gender/genderStore'
 import { useGetBranchQuery } from '~/stores/server/branch/branchStore'
 import { PatchStudentParentRequestBodyType } from '~/types/students/studentParentType'
 import { usePatchStudentParentMutation } from '~/stores/server/student/studentParentStore'
+import { useGetTimeSlotsQuery } from '~/stores/server/timeSlot/timeSlotStore'
+import { daysOfWeek } from '~/utils/daysOfWeek'
 // import { usePostStudentParentMutation } from '~/stores/server/student/studentParentStore'
 
 type FormType = PatchStudentRequestBodyType
@@ -31,21 +33,22 @@ const FORM_INITIAL_PARENT_VALUES: PatchStudentParentRequestBodyType = {
     description: '',
 }
 
-const FORM_INITIAL_VALUES: PatchStudentRequestBodyType = {
-    name: '',
-    titleId: 1,
-    statusId: 1,
-    courseId: null,
-    description: '',
-    avatar: '',
-    dob: '',
-    email: '',
-    elo: 0,
-    phone: '',
-    genderId: 1,
-    parentId: '',
-    branchId: 2,
-}
+// const FORM_INITIAL_VALUES: PatchStudentRequestBodyType = {
+//     name: '',
+//     titleId: 1,
+//     statusId: 1,
+//     courseId: null,
+//     description: '',
+//     avatar: '',
+//     dob: '',
+//     email: '',
+//     elo: 0,
+//     phone: '',
+//     genderId: 1,
+//     parentId: '',
+//     branchId: 2,
+
+// }
 
 const StudentEditPage = () => {
     const navigate = useNavigate()
@@ -67,6 +70,8 @@ const StudentEditPage = () => {
     )
     const patchStudentMutation = usePatchStudentMutation()
     const patchStudentParentMutation = usePatchStudentParentMutation()
+    const getTimeSlotsQuery = useGetTimeSlotsQuery()
+    
 
     // States
     const [imageUrl, setImageUrl] = useState<string | null>(null)
@@ -105,6 +110,7 @@ const StudentEditPage = () => {
                 branchId: formValues.branchId,
                 courseId: formValues.courseId,
                 description: formValues.description,
+                timeSlots: formValues.timeSlots?.map((item) => JSON.parse(item as string))
             }
 
             await patchStudentMutation.mutateAsync({
@@ -178,7 +184,11 @@ const StudentEditPage = () => {
             parentId: getStudentByIdQuery.data.parentId,
             branchId: getStudentByIdQuery.data.branchId,
             courseId: getStudentByIdQuery.data.courseId,
-            description: getStudentByIdQuery.data.description
+            description: getStudentByIdQuery.data.description,
+            timeSlots: getStudentByIdQuery.data.timeSlots?.map((item) => JSON.stringify({
+                dayOfWeek: item.dayOfWeek,
+                timeSlotId: item.timeSlotId
+            }))
         })
 
         parentForm.setFieldsValue({
@@ -203,7 +213,7 @@ const StudentEditPage = () => {
 
             <Form
                 form={form}
-                initialValues={FORM_INITIAL_VALUES}
+                initialValues={getStudentByIdQuery.data}
                 layout='vertical'
                 onFinish={handleSubmit}
                 className='grid grid-flow-row gap-x-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full'
@@ -341,6 +351,58 @@ const StudentEditPage = () => {
                                 value: item.id,
                                 label: item.name
                             }))}
+                        />
+                    </Form.Item>
+
+                    <Form.Item<FormType> name='courseId' label='Khóa học'>
+                        <Select
+                            showSearch
+                            placeholder='Khóa học'
+                            options={getCoursesQuery.data?.map((item) => ({
+                                value: item.id,
+                                label: item.name
+                            }))}
+                        />
+                    </Form.Item>
+
+                    <Form.Item<FormType> name='timeSlots' label='Ca học'>
+                        <TreeSelect
+                            treeData={daysOfWeek.map((item) => ({
+                                title: item.label,
+                                value: `day-${item.value}`,
+                                key: `day-${item.value}`,
+                                checkable: false,
+                                children: getTimeSlotsQuery.data?.map((timeSlot) => ({
+                                    title: `${timeSlot.start} - ${timeSlot.end}`,
+                                    value: JSON.stringify({
+                                        dayOfWeek: item.value,
+                                        timeSlotId: timeSlot.id
+                                    }),
+                                    key: JSON.stringify({
+                                        dayOfWeek: item.value,
+                                        timeSlotId: timeSlot.id
+                                    }),
+                                    // disabled: !timeSlot.isEnable
+                                }))
+                            }))}
+                            treeCheckable
+                            tagRender={({ value, closable, onClose }) => {
+                                const object = JSON.parse(value as string)
+                                return (
+                                    <Tag
+                                        closable={closable}
+                                        onClose={onClose}
+                                        style={{ marginRight: 3 }}
+                                    >
+                                        {
+                                            `${daysOfWeek[object.dayOfWeek].label} - ${getTimeSlotsQuery.data?.find((item) => item.id === object.timeSlotId)?.start} - ${getTimeSlotsQuery.data?.find((item) => item.id === object.timeSlotId)?.end}`
+                                        }
+                                    </Tag>
+                                )
+                            }}
+                            showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                            placeholder='Ca học'
+                            style={{ width: '100%' }}
                         />
                     </Form.Item>
 

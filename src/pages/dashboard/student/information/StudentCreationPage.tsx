@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Form, Input, InputNumber, Select, Upload, notification } from 'antd'
+import { Button, Form, Input, InputNumber, Select, Tag, TreeSelect, Upload, notification } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { generateSlug, handleBeforeUpload, handleChangeUploadImage } from '~/utils'
 // import { BASE_URLS } from '~/configs'
@@ -14,11 +14,12 @@ import { PostStudentRequestBodyType } from '~/types/students/studentType'
 import { useGetGenderQuery } from '~/stores/server/gender/genderStore'
 import { useGetBranchQuery } from '~/stores/server/branch/branchStore'
 import { PostStudentParentRequestBodyType, StudentParentType } from '~/types/students/studentParentType'
+import { useGetTimeSlotsQuery } from '~/stores/server/timeSlot/timeSlotStore'
+import { daysOfWeek } from '~/utils/daysOfWeek'
 
 type FormType = PostStudentRequestBodyType
 
 type ParentFormType = PostStudentParentRequestBodyType
-
 
 const FORM_INITIAL_PARENT_VALUES: PostStudentParentRequestBodyType = {
     motherName: '',
@@ -46,7 +47,8 @@ const FORM_INITIAL_VALUES: PostStudentRequestBodyType = {
     genderId: 1,
     parentId: '',
     branchId: 2,
-    parent: FORM_INITIAL_PARENT_VALUES
+    parent: FORM_INITIAL_PARENT_VALUES,
+    timeSlots: []
 }
 
 const StudentCreationPage = () => {
@@ -64,6 +66,7 @@ const StudentCreationPage = () => {
     // const postStudentParentMutation = usePostStudentParentMutation()
     const postUploadFilesMutation = usePostUploadFilesMutation()
     const postStudentMutation = usePostStudentMutation()
+    const getTimeSlotsQuery = useGetTimeSlotsQuery()
 
     // States
     const [imageUrl, setImageUrl] = useState<string | null>(null)
@@ -103,8 +106,6 @@ const StudentCreationPage = () => {
                 description: studentParentFormValues.description,
             }
 
-            // const parentId = await postStudentParentMutation.mutateAsync(studentParentRequestBody)
-
             const dataImageUrl = imageUrl ? await handleUploadFile(imageUrl as unknown as File) : null
 
             const requestBody: FormType = {
@@ -120,7 +121,8 @@ const StudentCreationPage = () => {
                 branchId: formValues.branchId,
                 courseId: formValues.courseId,
                 description: formValues.description,
-                parent: studentParentRequestBody
+                parent: studentParentRequestBody,
+                timeSlots: formValues.timeSlots?.map((item: any) => JSON.parse(item) as any)
             }
 
             await postStudentMutation.mutateAsync(requestBody)
@@ -141,27 +143,7 @@ const StudentCreationPage = () => {
 
     //   Effects
     useEffect(() => {
-        // if (!getStudentByIdQuery.data) {
-        //     return
-        // }
 
-        // form.setFieldsValue({
-        //     name: getStudentByIdQuery.data.name,
-        //     avatar: getStudentByIdQuery.data.avatar,
-        //     email: getStudentByIdQuery.data.email,
-        //     phone: getStudentByIdQuery.data.phone,
-        //     dob: getStudentByIdQuery.data.dob,
-        //     elo: getStudentByIdQuery.data.elo,
-        //     genderId: getStudentByIdQuery.data.genderId,
-        //     titleId: getStudentByIdQuery.data.titleId,
-        //     statusId: getStudentByIdQuery.data.statusId,
-        //     parentId: getStudentByIdQuery.data.parentId,
-        //     branchId: getStudentByIdQuery.data.branchId,
-        //     courseId: getStudentByIdQuery.data.courseId,
-        //     description: getStudentByIdQuery.data.description
-        // })
-
-        // setImageUrl(BASE_URLS.uploadEndPoint + getStudentByIdQuery.data.avatar)
     }, [form])
 
 
@@ -315,6 +297,47 @@ const StudentCreationPage = () => {
                         />
                     </Form.Item>
 
+                    <Form.Item<FormType> name='timeSlots' label='Ca học'>
+                        <TreeSelect
+                            treeData={daysOfWeek.map((item) => ({
+                                title: item.label,
+                                value: `day-${item.value}`,
+                                key: `day-${item.value}`,
+                                checkable: false,
+                                children: getTimeSlotsQuery.data?.map((timeSlot) => ({
+                                    title: `${timeSlot.start} - ${timeSlot.end}`,
+                                    value: JSON.stringify({
+                                        dayOfWeek: item.value,
+                                        timeSlotId: timeSlot.id
+                                    }),
+                                    key: JSON.stringify({
+                                        dayOfWeek: item.value,
+                                        timeSlotId: timeSlot.id
+                                    }),
+                                    // disabled: !timeSlot.isEnable
+                                }))
+                            }))}
+                            treeCheckable
+                            tagRender={({ value, closable, onClose }) => {
+                                const object = JSON.parse(value as string)
+                                return (
+                                    <Tag
+                                        closable={closable}
+                                        onClose={onClose}
+                                        style={{ marginRight: 3 }}
+                                    >
+                                        {
+                                            `${daysOfWeek[object.dayOfWeek].label} - ${getTimeSlotsQuery.data?.find((item) => item.id === object.timeSlotId)?.start} - ${getTimeSlotsQuery.data?.find((item) => item.id === object.timeSlotId)?.end}`
+                                        }
+                                    </Tag>
+                                )
+                            }}
+                            
+                            showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                            placeholder='Ca học'
+                            style={{ width: '100%' }}
+                        />
+                    </Form.Item>
                 </div>
                 <div
                     className='grid grid-flow-row gap-4 grid-cols-1'

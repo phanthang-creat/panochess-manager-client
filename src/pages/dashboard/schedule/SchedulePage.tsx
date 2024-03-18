@@ -7,7 +7,7 @@ import { vi } from 'date-fns/locale/vi'
 // import en from 'date-fns/locale/en-US'
 import './SchedulePage.scss'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { DatePicker, Form, Input, Modal, Select } from 'antd'
+import { DatePicker, Form, Input, Modal, Select, Tag } from 'antd'
 import { useGetClasssStatusesQuery } from '~/stores/server/class/classStatusStore'
 import { useGetTeachersQuery } from '~/stores/server/teacher/teacherStore'
 import { GetClassQueryItemResponseDataType, PatchClassRequestBodyType, PostClassRequestBodyType } from '~/types/class/classType'
@@ -20,6 +20,7 @@ import { Day } from 'node_modules/date-fns/types'
 import buddhistEra from 'dayjs/plugin/buddhistEra';
 import viPicker from 'antd/es/date-picker/locale/vi_VN'
 import { compareArrays } from '~/utils/compareArrays'
+import { useGetTimeSlotsQuery } from '~/stores/server/timeSlot/timeSlotStore'
 
 dayjs.extend(buddhistEra)
 
@@ -83,16 +84,20 @@ class EventType {
 
 export const SchedulePage = () => {
 
+    // state
     const [notificationApi, notificationContextHolder] = useNotification()
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [events, setEvents] = useState<EventType[]>([])
     const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null)
+
+    // queries
     const getClassStatusesQuery = useGetClasssStatusesQuery()
     const getTeachersQuery = useGetTeachersQuery()
     const getClassroomQuery = useGetClassroomsQuery()
     const postClassMutation = usePostClassMutation()
     const patchClassMutation = usePatchClassMutation()
     const getClassMutation = useGetClassesQuery()
+    const getTimeSlotsQuery = useGetTimeSlotsQuery()
 
     const [form] = Form.useForm<FormType>()
 
@@ -156,7 +161,7 @@ export const SchedulePage = () => {
                 startTime: formValues.startTime.toString(),
                 endTime: formValues.endTime.toString(),
                 classroomId: formValues.classroomId,
-                statusId: formValues.statusId,
+                statusId: 1,
                 classTeachers: listTeachers
             }
 
@@ -200,6 +205,26 @@ export const SchedulePage = () => {
             return `${s} - ${e}`
         },
     }), [])
+
+    // const updateClassStatus = async (statusId: number) => {
+    //     try {
+    //         const requestBody: PatchClassRequestBodyType = {
+    //             statusId
+    //         }
+    //         await patchClassMutation.mutateAsync({
+    //             id: selectedEvent?.resource?.id || '',
+    //             requestBody
+    //         })
+
+    //         return notificationApi.success({
+    //             message: 'Thay đổi trạng thái thành công'
+    //         })
+    //     } catch (error) {
+    //         return notificationApi.error({
+    //             message: 'Thay đổi trạng thái thất bại'
+    //         })
+    //     }
+    // }
 
     const clickRef = useRef(0)
 
@@ -272,7 +297,7 @@ export const SchedulePage = () => {
                     // Disable from last day
                     if (date.toLocaleDateString() < new Date().toLocaleDateString()) {
                         return {
-                            className: 'bg-gray-100'
+                            className: 'opacity-50'
                         }
                     } else {
                         return {
@@ -286,7 +311,7 @@ export const SchedulePage = () => {
                 }
                 selectable
                 formats={formats}
-
+                timeslots={3}
             />
             {/* Create Event Modal */}
             <Modal
@@ -308,8 +333,8 @@ export const SchedulePage = () => {
                     layout='vertical'
                     onFinish={handleSubmit}
                     className='grid grid-cols-3 grid-flow-row gap-x-4'
+                    disabled={[3, 4].includes(selectedEvent?.resource?.classStatus.id || 1) ? true : false}
                 >
-
                     <Form.Item<FormType>
                         name='startTime'
                         label='Thời gian bắt đầu'
@@ -321,7 +346,7 @@ export const SchedulePage = () => {
                                 message: 'Vui lòng chọn thời gian'
                             }
                         ]}
-                    >
+                        >
                         <DatePicker
                             // defaultValue={dayjs(selectedSlot?.start)} // Set the default date
                             showTime
@@ -359,7 +384,7 @@ export const SchedulePage = () => {
                                 message: 'Vui lòng chọn phòng học'
                             }
                         ]}
-                    >
+                        >
                         <Select
                             style={{ width: '100%' }}
                             placeholder='Chọn phòng học'
@@ -371,6 +396,39 @@ export const SchedulePage = () => {
                             }
                         />
                     </Form.Item>
+
+                    {
+                        // suggestion: Tag for time slots
+                        getTimeSlotsQuery.data && (
+                            <div className='col-span-3 mb-4'>
+                                <h1 className='text-xs italic font-medium mb-2 text-gray-500'>Gợi ý thời gian</h1>
+                                <div className='flex flex-wrap gap-2'>
+                                    {
+                                        getTimeSlotsQuery.data.map((timeSlot) => (
+                                            <Tag
+                                                key={timeSlot.id}
+                                                onClick={() => {
+                                                    form.setFieldsValue({
+                                                        startTime: dayjs(
+                                                            form.getFieldValue('startTime').format('YYYY-MM-DD') + ' ' + timeSlot.start
+                                                        ),
+                                                        endTime: dayjs(
+                                                            form.getFieldValue('endTime').format('YYYY-MM-DD') + ' ' + timeSlot.end
+                                                        )
+                                                    })
+                                                }}
+                                                bordered={false}
+                                                color="processing"
+                                                className='cursor-pointer'
+                                            >
+                                                {timeSlot.start} - {timeSlot.end}
+                                            </Tag>
+                                        ))
+                                    }
+                                </div>
+                            </div>
+                        )
+                    }
 
                     <Form.Item<FormType>
                         name='classTeachers'
@@ -388,13 +446,14 @@ export const SchedulePage = () => {
                             mode='multiple'
                             allowClear
                             placeholder='Chọn giáo viên'
+                            // disabled={[3, 4].includes(selectedEvent?.resource?.classStatus.id || 1) ? true : false}
                             options={
                                 getTeachersQuery.data?.data.map((teacher) => ({
                                     label: teacher.name,
                                     value: teacher.id
                                 }))
                             }
-                        />
+                            />
                     </Form.Item>
 
                     <Form.Item<FormType>
@@ -408,23 +467,24 @@ export const SchedulePage = () => {
                                 message: 'Vui lòng chọn trạng thái'
                             }
                         ]}
-                    >
+                        >
                         <Select
                             style={{ width: '100%' }}
                             placeholder='Chọn trạng thái'
+                            disabled={selectedEvent ? [3, 4].includes(selectedEvent.resource?.classStatus.id || 1) : false}
                             options={
                                 getClassStatusesQuery.data?.map((status) => ({
                                     label: status.name,
                                     value: status.id
                                 }))
                             }
-                        />
+                            />
                     </Form.Item>
 
                     <Form.Item<FormType>
                         name='description'
                         label='Ghi chú'
-                        className='col-span-2'
+                        className='col-span-3'
                     >
                         <Input
                             placeholder='Ghi chú'
@@ -432,6 +492,7 @@ export const SchedulePage = () => {
                         />
                     </Form.Item>
                 </Form>
+
             </Modal>
         </div>
     )
