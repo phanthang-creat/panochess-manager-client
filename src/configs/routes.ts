@@ -20,6 +20,7 @@ import { OrderListPage } from '~/pages/dashboard/order/OrderPage'
 import { OrderCreationPage } from '~/pages/dashboard/order/OrderCreationPage'
 import ClassroomPage from '~/pages/dashboard/config/classroom/ClassroomPage'
 import ClassroomCreationPage from '~/pages/dashboard/config/classroom/ClassroomCreationPage'
+import TimeSlotPage from '~/pages/dashboard/config/timeSlot/TimeSlotPage'
 // Dashboard
 const DashboardMainLayout = lazy(() => import('~/layouts/dashboard/main/MainLayout'))
 const DashboardAuthLayout = lazy(() => import('~/layouts/dashboard/auth/AuthLayout'))
@@ -29,7 +30,7 @@ const DashboardLoginPage = lazy(() => import('~/pages/dashboard/login/LoginPage'
 // const DashboardFooterPage = lazy(() => import('~/pages/dashboard/footer/FooterPage'))
 
 // const DashboardHomePage = lazy(() => import('~/pages/dashboard/home/HomePage'))
-const DashboardCoursePage = lazy(() => import('~/pages/dashboard/course/CoursePage'))
+// const DashboardCoursePage = lazy(() => import('~/pages/dashboard/course/CoursePage'))
 // const DashboardPostPage = lazy(() => import('~/pages/dashboard/post/PostPage'))
 // const DashboardPostCreationPage = lazy(() => import('~/pages/dashboard/post/PostCreationPage'))
 
@@ -63,12 +64,6 @@ const routes = [
     path: '/config/role',
     layout: DashboardMainLayout,
     component: DashboardStatisticPage,
-  },
-  {
-    path: '/course',
-    layout: DashboardMainLayout,
-    component: DashboardCoursePage,
-    public: false
   },
   {
     path: '/config/course',
@@ -110,6 +105,12 @@ const routes = [
     path: '/config/product-categories',
     layout: DashboardMainLayout,
     component: ProductCategoryPage,
+    public: false
+  },
+  {
+    path: '/config/time-slot',
+    layout: DashboardMainLayout,
+    component: TimeSlotPage,
     public: false
   },
   {

@@ -4,7 +4,7 @@ import { Layout, Menu } from 'antd'
 import clsx from 'clsx'
 import { v4 as uuidv4 } from 'uuid'
 import Logo from '~/assets/images/logo-transparent-256.png'
-import { UserOutlined, BranchesOutlined, ReadOutlined } from '@ant-design/icons'
+import { UserOutlined, BranchesOutlined, ReadOutlined, ClockCircleFilled } from '@ant-design/icons'
 
 interface Props {
   collapsed: boolean
@@ -15,12 +15,10 @@ const { Sider } = Layout
 const MENUS = [
   {
     key: uuidv4(),
-    // icon: <UploadOutlined />,
     label: 'Học sinh',
     children: [
       {
         key: '/student',
-        // icon: <UploadOutlined />,
         label: 'Danh sách học sinh'
       }
     ]
@@ -37,7 +35,6 @@ const MENUS = [
   },
   {
     key: uuidv4(),
-    // icon: <UploadOutlined />,
     label: 'Lớp học',
     children: [
       {
@@ -47,46 +44,22 @@ const MENUS = [
       }
     ]
   },
-  // {
-  //   key: uuidv4(),
-  //   // icon: <UploadOutlined />,
-  //   label: 'Tuyển dụng',
-  //   children: [
-  //     {
-  //       key: '/dashboard/recruitment-post',
-  //       // icon: <UploadOutlined />,
-  //       label: 'Bài viết tuyển dụng'
-  //     }
-  //   ]
-  // },
   {
     key: uuidv4(),
-    // icon: <UploadOutlined />,
     label: 'Quản lý sản phẩm',
     children: [
       {
         key: '/order',
-        // icon: <UploadOutlined />,
         label: 'Đơn hàng'
         
       },
       {
         key: '/product',
-        // icon: <UploadOutlined />,
         label: 'Sản phẩm'
       },
     ]
   },
-  // {
-  //   key: '/dashboard/application',
-  //   // icon: <UploadOutlined />,
-  //   label: 'Đơn tuyển dụng'
-  // },
-  // {
-  //   key: '/dashboard/game',
-  //   // icon: <UploadOutlined />,
-  //   label: 'Ván đấu'
-  // },
+
   {
     key: '/config',
     label: 'Cấu hình',
@@ -127,6 +100,12 @@ const MENUS = [
           icon: <ReadOutlined />,
           path: '/config/classroom',
       },
+      {
+          key: '/config/time-slot',
+          label: 'Thời gian học',
+          icon: <ClockCircleFilled />,
+          path: '/config/time-slot',
+      },
     ]
   }
 ]
@@ -134,10 +113,8 @@ const MENUS = [
 const Sidebar: FC<Props> = ({ collapsed }) => {
   const navigate = useNavigate()
 
-  // States
   const [selectedKeys, setSelectedKeys] = useState<Array<string>>([])
 
-  // useEffect
   useEffect(() => {
     let isFindMenu = false
 

@@ -4,6 +4,7 @@ import { GetGenderQueryItemResponseDataType } from "../genderType"
 import { MetaResponseDataType } from "../metaType"
 import { GetStudentParentQueryItemResponseDataType, StudentParentType } from "./studentParentType"
 import { GetStudentStatusQueryItemResponseDataType } from "./studentStatusType"
+import { PostStudentTimeSlotRequestBodyType, StudentTimeSlotType } from "./studentTimeSlotType"
 import { GetStudentTitleQueryItemResponseDataType } from "./studentTitleType"
 
 interface StudentDataType {
@@ -32,6 +33,7 @@ interface StudentResponseDataType extends StudentDataType{
     studentStatus: GetStudentStatusQueryItemResponseDataType
     gender: GetGenderQueryItemResponseDataType
     branch: GetBranchQueryItemResponseDataType
+    timeSlots: Array<StudentTimeSlotType>
 }
 
 interface GetStudentQueryItemResponseDataType {
@@ -41,9 +43,13 @@ interface GetStudentQueryItemResponseDataType {
 
 interface PostStudentRequestBodyType extends StudentDataType {
     parent: StudentParentType
+    timeSlots?: Array<PostStudentTimeSlotRequestBodyType>
 }
 
-interface PatchStudentRequestBodyType extends Partial<StudentDataType> {}
+interface PatchStudentRequestBodyType extends Partial<StudentDataType> {
+    // parent?: Partial<StudentParentType>
+    timeSlots?: Array<PostStudentTimeSlotRequestBodyType> | Array<string>
+}
 
 export type {
     GetStudentQueryItemResponseDataType,
