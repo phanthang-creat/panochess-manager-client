@@ -12,6 +12,11 @@ interface ClassDataType {
     description?: string
 }
 
+interface QueryGetClassDataType {
+    startDate: string
+    endDate: string
+}
+
 interface GetClassQueryItemResponseDataType extends ClassDataType {
     id: string
     classroom: GetClassroomQueryItemResponseDataType
@@ -33,5 +38,6 @@ export type {
     ClassDataType,
     GetClassQueryItemResponseDataType,
     PostClassRequestBodyType,
-    PatchClassRequestBodyType
+    PatchClassRequestBodyType,
+    QueryGetClassDataType
 }

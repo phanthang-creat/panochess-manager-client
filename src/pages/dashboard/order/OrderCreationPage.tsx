@@ -73,7 +73,7 @@ export const OrderCreationPage = () => {
                 orderDetails: orderDetails
             }
 
-            console.log(requestBody)
+            // console.log(requestBody)
 
             await postMutation.mutateAsync(requestBody)
 

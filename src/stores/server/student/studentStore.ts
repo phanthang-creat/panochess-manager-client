@@ -1,14 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { axios } from "~/configs"
-import { GetStudentQueryItemResponseDataType, PatchStudentRequestBodyType, PostStudentRequestBodyType, StudentResponseDataType } from "~/types/students/studentType"
+import { GetStudentQueryItemResponseDataType, PatchStudentRequestBodyType, PostStudentRequestBodyType, QueryGetStudentType, StudentResponseDataType } from "~/types/students/studentType"
 
 // GET /students
-const useGetStudentsQuery = () => {
+const useGetStudentsQuery = (query?: QueryGetStudentType) => {
     return useQuery({
-        queryKey: ['[GET] /students'],
+        queryKey: ['[GET] /students', query],
         queryFn: () => axios.get<
             GetStudentQueryItemResponseDataType
         >('/students'),
+        select: (data) => data.data
+    })
+}
+
+// GET /students
+const useGetStudentTimeSlotsQuery = (query?: QueryGetStudentType) => {
+    return useQuery({
+        queryKey: ['[GET] /students/time-slot'],
+        queryFn: () => axios.get<
+            GetStudentQueryItemResponseDataType
+        >('/students/time-slot', { params: query }),
         select: (data) => data.data
     })
 }
@@ -19,6 +30,7 @@ const useGetStudentByIdQuery = (id: string) => {
         queryFn: () => axios.get<
             StudentResponseDataType
         >(`/students/${id}`),
+        enabled: !!id,
         select: (data) => data.data
     })
 }
@@ -56,6 +68,7 @@ const usePatchStudentMutation = () => {
 
 export {
     useGetStudentsQuery,
+    useGetStudentTimeSlotsQuery,
     useGetStudentByIdQuery,
     usePostStudentMutation,
     usePatchStudentMutation

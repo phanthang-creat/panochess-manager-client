@@ -1,7 +1,7 @@
 import { GetBranchQueryItemResponseDataType } from "../branchType"
 import { GetCourseResponseDataType } from "../courseType"
 import { GetGenderQueryItemResponseDataType } from "../genderType"
-import { MetaResponseDataType } from "../metaType"
+import { MetaResponseDataType, PageOptionsType } from "../metaType"
 import { GetStudentParentQueryItemResponseDataType, StudentParentType } from "./studentParentType"
 import { GetStudentStatusQueryItemResponseDataType } from "./studentStatusType"
 import { PostStudentTimeSlotRequestBodyType, StudentTimeSlotType } from "./studentTimeSlotType"
@@ -21,6 +21,15 @@ interface StudentDataType {
     branchId: number
     courseId: number | null
     description: string
+}
+
+interface QueryGetStudentType extends PageOptionsType {
+    name?: string
+    email?: string
+    phone?: string
+    dob?: string
+    timeSlotId?: number
+    dayOfWeek?: number
 }
 
 interface StudentResponseDataType extends StudentDataType{
@@ -55,5 +64,6 @@ export type {
     GetStudentQueryItemResponseDataType,
     StudentResponseDataType,
     PostStudentRequestBodyType,
-    PatchStudentRequestBodyType
+    PatchStudentRequestBodyType,
+    QueryGetStudentType
 }
