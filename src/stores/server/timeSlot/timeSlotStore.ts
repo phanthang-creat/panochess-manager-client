@@ -42,7 +42,7 @@ const usePatchTimeSlotMutation = () => {
     const queryClient = useQueryClient()
     return useMutation({
         mutationKey: ['[PATCH] /time-slots/{id}'],
-        mutationFn: ({ id, requestBody }: { id: string; requestBody: PatchTimeSlotRequestBodyType }) =>
+        mutationFn: ({ id, requestBody }: { id: number; requestBody: PatchTimeSlotRequestBodyType }) =>
             axios.patch(`/time-slots/${id}`, requestBody),
         onSuccess: () =>
             queryClient.invalidateQueries({
@@ -55,7 +55,7 @@ const useDeleteTimeSlotMutation = () => {
     const queryClient = useQueryClient()
     return useMutation({
         mutationKey: ['[DELETE] /time-slots/{id}'],
-        mutationFn: (id: string) => axios.delete(`/time-slots/${id}`),
+        mutationFn: (id: number) => axios.delete(`/time-slots/${id}`),
         onSuccess: () =>
             queryClient.invalidateQueries({
                 queryKey: ['[GET] /time-slots']

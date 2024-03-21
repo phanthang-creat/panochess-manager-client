@@ -20,7 +20,7 @@ const TimeSlotPage = () => {
 
   // States
   const [isOpenConfirmDeleteModal, setIsOpenConfirmDeleteModal] = useState<boolean>(false)
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null)
   const getQuery = useGetTimeSlotsQuery()
   const [isOpenCreationModal, setIsOpenCreationModal] = useState<boolean>(false)
   const [form] = Form.useForm<FormType>()
