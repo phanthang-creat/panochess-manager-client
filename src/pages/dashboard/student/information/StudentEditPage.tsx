@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { Button, Form, Input, InputNumber, Select, Tag, TreeSelect, Upload, notification } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { generateSlug, handleBeforeUpload, handleChangeUploadImage } from '~/utils'
@@ -47,12 +47,13 @@ const FORM_INITIAL_PARENT_VALUES: PatchStudentParentRequestBodyType = {
 //     genderId: 1,
 //     parentId: '',
 //     branchId: 2,
-
+//     timeSlots: []
 // }
 
 const StudentEditPage = () => {
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
     const { id } = useParams()
+    // console.log(id)
     const [form] = Form.useForm<FormType>()
     const [parentForm] = Form.useForm<ParentFormType>()
     const [notificationApi, notificationContextHolder] = notification.useNotification()
@@ -71,7 +72,7 @@ const StudentEditPage = () => {
     const patchStudentMutation = usePatchStudentMutation()
     const patchStudentParentMutation = usePatchStudentParentMutation()
     const getTimeSlotsQuery = useGetTimeSlotsQuery()
-    
+
 
     // States
     const [imageUrl, setImageUrl] = useState<string | null>(null)
@@ -114,22 +115,28 @@ const StudentEditPage = () => {
             }
 
             await patchStudentMutation.mutateAsync({
-                id : id ?? '',
+                id: id ?? '',
                 data: requestBody
             })
-                
+
 
             notificationApi.success({
                 message: 'Thao tác thành công'
             })
 
-            return navigate('/student')
+            return;
         } catch (error) {
             return notificationApi.error({
                 message: 'Thao tác thất bại'
             })
         }
     }
+
+
+    // useEffect(() => {
+    //     form.setFieldsValue(FORM_INITIAL_VALUES)
+    // }
+    // , [form])
 
     const handleStudentParentSubmit = async () => {
         try {
@@ -155,7 +162,7 @@ const StudentEditPage = () => {
                 message: 'Thao tác thành công'
             })
 
-            return navigate('/student')
+            return;
         } catch (error) {
             return notificationApi.error({
                 message: 'Thao tác thất bại'
@@ -170,6 +177,8 @@ const StudentEditPage = () => {
         if (!getStudentByIdQuery.data) {
             return
         }
+
+        console.log(getStudentByIdQuery.data)
 
         form.setFieldsValue({
             name: getStudentByIdQuery.data.name,
@@ -234,6 +243,7 @@ const StudentEditPage = () => {
                         }}
                         rules={[{ message: 'Vui lòng chọn ảnh' }]}
                         className='col-span-1'
+                    // initialValue={FORM_INITIAL_VALUES}
                     >
                         <Upload
                             listType='picture-card'
@@ -364,47 +374,74 @@ const StudentEditPage = () => {
                             }))}
                         />
                     </Form.Item>
+                    {
+                        getStudentByIdQuery.data && (
 
-                    <Form.Item<FormType> name='timeSlots' label='Ca học'>
-                        <TreeSelect
-                            treeData={daysOfWeek.map((item) => ({
-                                title: item.label,
-                                value: `day-${item.value}`,
-                                key: `day-${item.value}`,
-                                checkable: false,
-                                children: getTimeSlotsQuery.data?.map((timeSlot) => ({
-                                    title: `${timeSlot.start} - ${timeSlot.end}`,
-                                    value: JSON.stringify({
-                                        dayOfWeek: item.value,
-                                        timeSlotId: timeSlot.id
-                                    }),
-                                    key: JSON.stringify({
-                                        dayOfWeek: item.value,
-                                        timeSlotId: timeSlot.id
-                                    }),
-                                    // disabled: !timeSlot.isEnable
-                                }))
-                            }))}
-                            treeCheckable
-                            tagRender={({ value, closable, onClose }) => {
-                                const object = JSON.parse(value as string)
-                                return (
-                                    <Tag
-                                        closable={closable}
-                                        onClose={onClose}
-                                        style={{ marginRight: 3 }}
-                                    >
-                                        {
-                                            `${daysOfWeek[object.dayOfWeek].label} - ${getTimeSlotsQuery.data?.find((item) => item.id === object.timeSlotId)?.start} - ${getTimeSlotsQuery.data?.find((item) => item.id === object.timeSlotId)?.end}`
+                            <Form.Item<FormType>
+                                name='timeSlots'
+                                label='Ca học'
+                            >
+                                <TreeSelect
+                                    // value={[]}
+
+                                    treeData={daysOfWeek.map((item) => ({
+                                        title: item.label,
+                                        value: `day-${item.value}`,
+                                        key: `day-${item.value}`,
+                                        checkable: false,
+                                        children: getTimeSlotsQuery.data?.map((timeSlot) => ({
+                                            title: `${timeSlot.start} - ${timeSlot.end}`,
+                                            value: JSON.stringify({
+                                                dayOfWeek: item.value,
+                                                timeSlotId: timeSlot.id
+                                            }),
+                                            key: JSON.stringify({
+                                                dayOfWeek: item.value,
+                                                timeSlotId: timeSlot.id
+                                            }),
+                                            // disabled: !timeSlot.isEnable
+                                        }))
+                                    }))}
+                                    treeCheckable
+                                    tagRender={({ value, closable, onClose }) => {
+                                        try {
+                                            if (!value && !JSON.parse(value)) {
+                                                return <></>
+                                            }
+                                            const object = JSON.parse(value)
+                                            return (
+                                                <Tag
+                                                    closable={closable}
+                                                    onClose={onClose}
+                                                    key={value}
+                                                    style={{ marginRight: 3 }}
+                                                >
+                                                    {
+                                                        `${daysOfWeek[object.dayOfWeek].label} - ${getTimeSlotsQuery.data?.find((item) => item.id === object.timeSlotId)?.start} - ${getTimeSlotsQuery.data?.find((item) => item.id === object.timeSlotId)?.end}`
+                                                    }
+                                                </Tag>
+                                            )
                                         }
-                                    </Tag>
-                                )
-                            }}
-                            showCheckedStrategy={TreeSelect.SHOW_PARENT}
-                            placeholder='Ca học'
-                            style={{ width: '100%' }}
-                        />
-                    </Form.Item>
+                                        catch (error) {
+                                            // console.log(error)
+                                            return <></>
+                                        }
+                                    }}
+
+                                    maxTagPlaceholder={(omittedValues) => (
+                                        <Tag>
+                                            {`+ ${omittedValues.length} ca`}
+                                        </Tag>
+                                    )}
+                                    maxTagCount={2}
+                                    treeDefaultExpandAll
+                                    showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                                    placeholder='Ca học'
+                                    style={{ width: '100%' }}
+                                />
+                            </Form.Item>
+                        )
+                    }
 
                     <Button
                         type='primary'
@@ -427,7 +464,7 @@ const StudentEditPage = () => {
                         />
                     </Form.Item>
                 </div>
-                
+
             </Form>
 
             <Form
@@ -509,8 +546,8 @@ const StudentEditPage = () => {
                         <Input placeholder='Địa chỉ' />
                     </Form.Item>
 
-                    <Button 
-                        type='primary' 
+                    <Button
+                        type='primary'
                         className='col-span-2 w-full justify-center'
                         loading={patchStudentParentMutation.isPending}
                         onClick={() => handleStudentParentSubmit()}

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Form, Input, InputNumber, Select, Tag, TreeSelect, Upload, notification } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber, Select, Tag, TreeSelect, Upload, notification } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { generateSlug, handleBeforeUpload, handleChangeUploadImage } from '~/utils'
 // import { BASE_URLS } from '~/configs'
@@ -131,7 +131,7 @@ const StudentCreationPage = () => {
                 message: 'Thao tác thành công'
             })
 
-            return navigate('/students')
+            return navigate('/student')
         } catch (error) {
             return notificationApi.error({
                 message: 'Thao tác thất bại'
@@ -257,7 +257,11 @@ const StudentCreationPage = () => {
                     </Form.Item>
 
                     <Form.Item<FormType> name='dob' label='Ngày sinh'>
-                        <Input type='date' />
+                        <DatePicker
+                            format='DD/MM/YYYY'
+                            placeholder='Ngày sinh'
+                            style={{ width: '100%' }}
+                        />
                     </Form.Item>
 
                     <Form.Item<FormType> name='elo' label='Elo'>

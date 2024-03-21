@@ -1,4 +1,5 @@
 import { GetTimeSlotQueryItemResponseDataType } from "../timeSlot/timeSlotType";
+import { StudentResponseDataType } from "./studentType";
 
 interface StudentTimeSlotType {
     studentId: string;
@@ -11,6 +12,7 @@ interface GetStudentTimeSlotQueryItemResponseDataType extends StudentTimeSlotTyp
     createdAt: string;
     updatedAt: string;
     timeSlot: GetTimeSlotQueryItemResponseDataType;
+    student: StudentResponseDataType;
 }
 
 interface PostStudentTimeSlotRequestBodyType {

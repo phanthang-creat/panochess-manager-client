@@ -4,7 +4,7 @@ interface TimeSlotType {
 }
 
 interface GetTimeSlotQueryItemResponseDataType extends TimeSlotType {
-    id: string;
+    id: number;
     createdAt: string;
     updatedAt: string;
 }

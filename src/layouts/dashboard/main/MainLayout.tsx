@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { Sidebar, Header } from './components'
 import { useLocation } from 'react-router-dom' // Import the useLocation hook
 
-import { Link } from 'react-router-dom' // Import the Link component
+// import { Link } from 'react-router-dom' // Import the Link component
 import '../../../configs/routes'
 
 interface Props {
@@ -32,13 +32,16 @@ const MainLayout: FC<Props> = ({ children }) => {
         <Header collapsed={collapsed} setCollapsed={setCollapsed} />
 
         {/* Breadcrumb */}
-        <Breadcrumb className='p-4 bg-[#fafcfe]'>
-          {pathSegments.map((segment, index) => (
-            <Breadcrumb.Item key={index}>
-              <Link to={`/${pathSegments.slice(0, index + 1).join('/')}`}>{segment}</Link>
-            </Breadcrumb.Item>
+        <Breadcrumb className='p-4 bg-[#fafcfe]'
+          items={pathSegments.map((segment, index) => (
+            {
+              key: index,
+              href: `/${segment}`,
+              title: segment
+
+            }
           ))}
-        </Breadcrumb>
+        />
 
         {/* Content */}
         <Content className='p-4 min-h-[calc(100vh_-_64px)] bg-[#fafcfe]'>{children}</Content>

@@ -1,12 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { axios } from "~/configs";
-import { GetClassQueryItemResponseDataType, PatchClassRequestBodyType, PostClassRequestBodyType } from "~/types/class/classType";
+import { GetClassQueryItemResponseDataType, PatchClassRequestBodyType, PostClassRequestBodyType, QueryGetClassDataType } from "~/types/class/classType";
 
 //GET /class
-const useGetClassesQuery = () => {
+const useGetClassesQuery = (query: QueryGetClassDataType) => {
     return useQuery({
         queryKey: ['[GET] /class'],
-        queryFn: () => axios.get<Array<GetClassQueryItemResponseDataType>>('/class'),
+        queryFn: () => axios.get<Array<GetClassQueryItemResponseDataType>>('/class', { params: query }),
         select: (data) => data.data
     })
 }
@@ -26,40 +26,40 @@ const useGetClassByIdQuery = (
 
 //POST /class
 const usePostClassMutation = () => {
-    const queryClient = useQueryClient()
+    // const queryClient = useQueryClient()
     return useMutation({
         mutationKey: ['[POST] /class'],
-        mutationFn: (requestBody: PostClassRequestBodyType) => axios.post('/class', requestBody),
-        onSuccess: () =>
-            queryClient.invalidateQueries({
-                queryKey: ['[GET] /class']
-            })
+        mutationFn: (requestBody: PostClassRequestBodyType) => axios.post<GetClassQueryItemResponseDataType>('/class', requestBody),
+        // onSuccess: () =>
+        //     queryClient.invalidateQueries({
+        //         queryKey: ['[GET] /class']
+        //     })
     })
 }
 
 //PATCH /class/{id}
 const usePatchClassMutation = () => {
-    const queryClient = useQueryClient()
+    // const queryClient = useQueryClient()
     return useMutation({
         mutationKey: ['[PATCH] /class/{id}'],
         mutationFn: ({ id, requestBody }: { id: string; requestBody: PatchClassRequestBodyType }) =>
             axios.patch(`/class/${id}`, requestBody),
-        onSuccess: () =>
-            queryClient.invalidateQueries({
-                queryKey: ['[GET] /class']
-            })
+        // onSuccess: () =>
+            // queryClient.invalidateQueries({
+            //     queryKey: ['[GET] /class']
+            // })
     })
 }
 
 const useDeleteClassMutation = () => {
-    const queryClient = useQueryClient()
+    // const queryClient = useQueryClient()
     return useMutation({
         mutationKey: ['[DELETE] /class/{id}'],
         mutationFn: (id: string) => axios.delete(`/class/${id}`),
-        onSuccess: () =>
-            queryClient.invalidateQueries({
-                queryKey: ['[GET] /class']
-            })
+        // onSuccess: () =>
+        //     queryClient.invalidateQueries({
+        //         queryKey: ['[GET] /class']
+        //     })
     })
 }
 

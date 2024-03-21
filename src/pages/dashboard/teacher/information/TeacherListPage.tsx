@@ -101,7 +101,7 @@ export const TeacherListPage = () => {
         <div className=''>
             {/* {notificationContextHolder} */}
 
-            <h1 className='text-xl font-medium mb-4'>Danh sách học viên</h1>
+            <h1 className='text-xl font-medium mb-4'>Danh sách giáo viên</h1>
             <div className='flex flex-col items-start gap-4'>
                 <Button type='primary' className='self-end' onClick={() => navigate('/teacher/creation')}>
                     Thêm mới
