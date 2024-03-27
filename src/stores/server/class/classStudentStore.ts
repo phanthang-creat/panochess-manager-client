@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { axios } from "~/configs";
-import { GetListClassStudentQueryResponseDataType, PostClassStudentRequestBodyDataType, QueryClassStudentDataType } from "~/types/class/classStudentType";
+import { GetClassStudentQueryItemResponseDataType, GetListClassStudentQueryResponseDataType, PostClassStudentRequestBodyDataType, QueryClassStudentByStudentIdDataType, QueryClassStudentDataType } from "~/types/class/classStudentType";
 
 //GET /class-students
 const useGetClassStudentsQuery = (query?: QueryClassStudentDataType) => {
@@ -12,17 +12,18 @@ const useGetClassStudentsQuery = (query?: QueryClassStudentDataType) => {
 }
 
 //GET /class-students/{id}
-// const useGetClassByIdQuery = (
-//     options: {id: string}
-// ) => {
-//     return useQuery({
-//         queryKey: ['[GET] /class-students/', options.id],
-//         queryFn: () => axios.get(`/class-students/${options.id}`),
-//         select: (data) => data.data,
-//         enabled: !!options.id,
-//         retry: 3
-//     })
-// }
+const useGetClassByStudentIdAndCourseIdQuery = (
+    options: {id: string},
+    query: QueryClassStudentByStudentIdDataType
+) => {
+    // console.log('useGetClassByStudentIdAndCourseIdQuery', options.id)
+    return useQuery({
+        queryKey: ['[GET] /class-students/student/', options.id],
+        queryFn: () => axios.get<Array<GetClassStudentQueryItemResponseDataType>>(`/class-students/student/${options.id}`, { params: query }),
+        select: (data) => data.data,
+        enabled: !!query.courseId && !!options.id,
+    })
+}
 
 //POST /class-students
 const usePostClassStudentMutation = () => {
@@ -66,6 +67,7 @@ const useDeleteClassStudentMutation = () => {
 export { 
     useGetClassStudentsQuery,
     // useGetClassByIdQuery,
+    useGetClassByStudentIdAndCourseIdQuery,
     usePostClassStudentMutation,
     // usePatchClassMutation,
     useDeleteClassStudentMutation

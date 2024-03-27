@@ -37,6 +37,7 @@ import { useGetStudentTimeSlotsQuery } from '~/stores/server/student/studentStor
 import viDayjs from 'dayjs/locale/vi'
 import { ScheduleOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
+import { useGetClassSampleQuery } from '~/stores/server/class/classSampleStore'
 
 dayjs.extend(buddhistEra)
 dayjs.locale(viDayjs)
@@ -122,6 +123,7 @@ export const SchedulePage = () => {
     })
 
     const [gotWeek, setGotWeek] = useState<number[]>([dayjs().startOf('week').unix()])
+    const [defaultEvent, setDefaultEvent] = useState<EventType[] | null>(null)
 
     // queries
     const getClassStatusesQuery = useGetClasssStatusesQuery()
@@ -131,15 +133,58 @@ export const SchedulePage = () => {
     const getTimeSlotsQuery = useGetTimeSlotsQuery()
     const getClassStudentsQuery = useGetClassStudentsQuery(query)
     const getStudentTimeSlotsQuery = useGetStudentTimeSlotsQuery(studentQuery)
-    const deleteClassMutation = useDeleteClassMutation()
+    const getClassSampleQuery = useGetClassSampleQuery()
+
 
     // mutations
+    const deleteClassMutation = useDeleteClassMutation()
     const postClassMutation = usePostClassMutation()
     const postClassStudentMutation = usePostClassStudentMutation()
     const patchClassMutation = usePatchClassMutation()
 
     const [form] = Form.useForm<FormType>()
     const clickRef = useRef(0)
+
+    useEffect(() => {
+        if (!getClassSampleQuery.data) {
+            return
+        }
+        const day = new Date().getDay()
+        const newEvents = getClassSampleQuery.data.map((item) => {
+            return new EventType(
+                ``,
+                false,
+                dayjs().add(item.dayOfWeekId - day, 'day').set('hour', parseInt(item.timeSlot.start.split(':')[0])).set('minute', parseInt(item.timeSlot.start.split(':')[1])).set('second', 0).toDate(),
+                dayjs().add(item.dayOfWeekId - day, 'day').set('hour', parseInt(item.timeSlot.end.split(':')[0])).set('minute', parseInt(item.timeSlot.end.split(':')[1])).set('second', 0).toDate(),
+                {
+                    id: '0',
+                    classroomId: '', // Add the missing property
+                    classroom: {
+                        id: '0',
+                        name: '',
+                        room: '',
+                        branchId: '',
+                        status: 0
+                    },
+                    statusId: 1, // Add the missing property
+                    classStatus: {
+                        id: 1,
+                        name: ''
+                    },
+                    classTeachers: [],
+                    description: '',
+                    createdAt: '',
+                    updatedAt: '',
+                    startTime: '',
+                    endTime: ''
+                }
+            )
+        })
+        setDefaultEvent(newEvents);
+
+        // setEvents(events.concat(newEvents))
+
+    }, [getClassSampleQuery.data])
 
     const handleSubmit = async () => {
         const formValues = form.getFieldsValue()
@@ -343,9 +388,6 @@ export const SchedulePage = () => {
             classId: event.resource?.id || ''
         })
 
-        // setListStudents(getClassStudentsQuery.data?.data.map((item) => item.student.name) || [])
-
-        // console.log('event', event)
         setStudentQuery((prevQuery) => ({
             ...prevQuery,
             take: 10,
@@ -373,8 +415,6 @@ export const SchedulePage = () => {
 
     useEffect(() => {
         getClassMutation.refetch()
-        console.log('classQuery', classQuery)
-        console.log('gotWeek', gotWeek)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [classQuery])
 
@@ -453,6 +493,7 @@ export const SchedulePage = () => {
         [notificationApi, form]
     )
 
+    // on calendar navigate
     const handleNavigate = (date: Date) => {
         if (gotWeek.includes(dayjs(date).startOf('week').unix())) {
             return
@@ -466,6 +507,40 @@ export const SchedulePage = () => {
         setGotWeek((prev) => {
             return prev.concat(dayjs(date).startOf('week').unix())
         })
+
+        const day = new Date().getDay()
+        const newEvents = getClassSampleQuery.data?.map((item) => {
+            return new EventType(
+                ``,
+                false,
+                dayjs(date).add(item.dayOfWeekId - day, 'day').set('hour', parseInt(item.timeSlot.start.split(':')[0])).set('minute', parseInt(item.timeSlot.start.split(':')[1])).set('second', 0).toDate(),
+                dayjs(date).add(item.dayOfWeekId - day, 'day').set('hour', parseInt(item.timeSlot.end.split(':')[0])).set('minute', parseInt(item.timeSlot.end.split(':')[1])).set('second', 0).toDate(),
+                {
+                    id: '0',
+                    classroomId: '', // Add the missing property
+                    classroom: {
+                        id: '0',
+                        name: '',
+                        room: '',
+                        branchId: '',
+                        status: 0
+                    },
+                    statusId: 1, // Add the missing property
+                    classStatus: {
+                        id: 1,
+                        name: ''
+                    },
+                    classTeachers: [],
+                    description: '',
+                    createdAt: '',
+                    updatedAt: '',
+                    startTime: '',
+                    endTime: ''
+                }
+            )
+        })
+
+        setDefaultEvent(defaultEvent?.concat(newEvents || []) || [])
     }
 
     // const handleDelete
@@ -477,8 +552,6 @@ export const SchedulePage = () => {
             {notificationContextHolder}
             <Calendar
                 onNavigate={(date) => {
-                    // console.log('date', date)
-                    // console.log('view', view)
                     handleNavigate(date)
                 }}
                 defaultView={Views.WEEK}
@@ -486,9 +559,7 @@ export const SchedulePage = () => {
                 onView={() => { }} // This is a dummy function to prevent the warning
                 defaultDate={defaultDate}
                 localizer={localizer}
-                events={events}
-                // startAccessor="start"="ignoreEvents"
-                // endAccessor="end"
+                events={events.concat(defaultEvent || [])}
                 style={{ height: 1200 }}
                 culture={'vi'}
                 dayPropGetter={(date) => {
@@ -739,7 +810,7 @@ export const SchedulePage = () => {
                                                             onClick={() => {
                                                                 handleAddStudent(item.id)
                                                             }}
-                                                            disabled={!item.courseId}
+                                                            disabled={!item.courseRegistrations[0]?.course.name || false}
                                                         ></Button>
                                                     ]}
                                                 >
@@ -750,7 +821,7 @@ export const SchedulePage = () => {
                                                             </Link>
                                                         }
                                                         avatar={<Avatar src={item.avatar ?? ''} />}
-                                                        description={`Đang học: ${item.course?.name ?? 'Chưa đăng kí'}`}
+                                                        description={`Đang học: ${item.courseRegistrations[0]?.course.name ?? 'Chưa có khóa học'}`}
                                                     />
                                                 </List.Item>
                                             )}

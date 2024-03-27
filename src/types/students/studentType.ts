@@ -1,5 +1,6 @@
 import { GetBranchQueryItemResponseDataType } from "../branchType"
-import { GetCourseResponseDataType } from "../courseType"
+import { GetCourseRegistrationQueryItemResponseDataType } from "../course/courseRegistrationType"
+// import { GetCourseResponseDataType } from "../courseType"
 import { GetGenderQueryItemResponseDataType } from "../genderType"
 import { MetaResponseDataType, PageOptionsType } from "../metaType"
 import { GetStudentParentQueryItemResponseDataType, StudentParentType } from "./studentParentType"
@@ -19,7 +20,7 @@ interface StudentDataType {
     statusId: number
     parentId?: string
     branchId: number
-    courseId: number | null
+    // courseId: number | null
     description: string
 }
 
@@ -36,13 +37,14 @@ interface StudentResponseDataType extends StudentDataType{
     id: string
     createdAt: string
     updatedAt: string
-    course: GetCourseResponseDataType
+    // course: GetCourseResponseDataType
     studentParent: GetStudentParentQueryItemResponseDataType
     studentTitle: GetStudentTitleQueryItemResponseDataType
     studentStatus: GetStudentStatusQueryItemResponseDataType
     gender: GetGenderQueryItemResponseDataType
     branch: GetBranchQueryItemResponseDataType
     timeSlots: Array<StudentTimeSlotType>
+    courseRegistrations: GetCourseRegistrationQueryItemResponseDataType[]
 }
 
 interface GetStudentQueryItemResponseDataType {

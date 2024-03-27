@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { axios } from "~/configs"
-import { GetBranchQueryItemResponseDataType } from "~/types/branchType"
+import { GetBranchQueryItemResponseDataType, PatchBranchRequestBodyType, PostBranchRequestBodyType } from "~/types/branchType"
 
 const useGetBranchQuery = () => {
     return useQuery({
@@ -12,4 +12,34 @@ const useGetBranchQuery = () => {
         retry: 3
     })
 }
-export { useGetBranchQuery }
+
+
+const usePostBranchMutation = () => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationKey: ['[POST] /branches'],
+        mutationFn: (requestBody: PostBranchRequestBodyType) => axios.post('/branches', requestBody),
+        onSuccess: () =>
+            queryClient.invalidateQueries({
+                queryKey: ['[GET] /branches']
+            })
+    })
+}
+
+const usePatchBranchMutation = () => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationKey: ['[PATCH] /branches'],
+        mutationFn: ({ id, requestBody }: { id: string; requestBody: PatchBranchRequestBodyType }) => axios.patch(`/branches/${id}`, requestBody),
+        onSuccess: () =>
+            queryClient.invalidateQueries({
+                queryKey: ['[GET] /branches']
+            })
+    })
+}
+
+export {
+    useGetBranchQuery,
+    usePostBranchMutation,
+    usePatchBranchMutation
+}

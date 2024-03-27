@@ -1,5 +1,6 @@
 import { MetaResponseDataType, PageOptionsType } from "../metaType";
 import { StudentResponseDataType } from "../students/studentType";
+import { GetClassQueryItemResponseDataType } from "./classType";
 
 interface ClassStudentDataType {
     classId: string
@@ -10,11 +11,19 @@ interface ClassStudentDataType {
 interface QueryClassStudentDataType extends PageOptionsType {
     classId: string
     studentId?: string
+    courseId?: string
+}
+
+interface QueryClassStudentByStudentIdDataType {
+    // classId: string
+    // studentId?: string
+    courseId?: string
 }
 
 interface GetClassStudentQueryItemResponseDataType extends ClassStudentDataType {
     id: string
     student: StudentResponseDataType
+    class: GetClassQueryItemResponseDataType
     createdAt: string
     updatedAt: string
 }
@@ -37,6 +46,7 @@ interface PostClassStudentRequestBodyDataType {
 export type {
     ClassStudentDataType,
     QueryClassStudentDataType,
+    QueryClassStudentByStudentIdDataType,
     GetClassStudentQueryItemResponseDataType,
     PostClassStudentRequestBodyDataType,
     GetListClassStudentQueryResponseDataType

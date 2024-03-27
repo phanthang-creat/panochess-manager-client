@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { axios } from "~/configs";
-import { GetCourseResponseDataType, PatchCourseRequestBodyType, PostCourseRequestBodyType } from "~/types/courseType";
+import { GetCourseResponseDataType, PatchCourseRequestBodyType, PostCourseRequestBodyType } from "~/types/course/courseType";
 
 //GET /courses
 const useGetCoursesQuery = () => {

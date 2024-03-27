@@ -8,7 +8,7 @@ import { generateSlug, handleBeforeUpload, handleChangeUploadImage } from '~/uti
 import { usePostUploadFilesMutation } from '~/stores/server/fileUploadStore'
 import { useGetStudentTitlesQuery } from '~/stores/server/student/studentTitleStore'
 import { useGetStudentStatusesQuery } from '~/stores/server/student/studentStatusStore'
-import { useGetCoursesQuery } from '~/stores/server/course/courseStore'
+// import { useGetCoursesQuery } from '~/stores/server/course/courseStore'
 import { usePostStudentMutation } from '~/stores/server/student/studentStore'
 import { PostStudentRequestBodyType } from '~/types/students/studentType'
 import { useGetGenderQuery } from '~/stores/server/gender/genderStore'
@@ -37,7 +37,7 @@ const FORM_INITIAL_VALUES: PostStudentRequestBodyType = {
     name: '',
     titleId: 1,
     statusId: 1,
-    courseId: null,
+    // courseId: null,
     description: '',
     avatar: '',
     dob: '',
@@ -60,7 +60,7 @@ const StudentCreationPage = () => {
     // Stores
     const getStudentTitlesQuery = useGetStudentTitlesQuery()
     const getStudentStatusesQuery = useGetStudentStatusesQuery()
-    const getCoursesQuery = useGetCoursesQuery()
+    // const getCoursesQuery = useGetCoursesQuery()
     const getGenderQuery = useGetGenderQuery()
     const getBranchesQuery = useGetBranchQuery()
     // const postStudentParentMutation = usePostStudentParentMutation()
@@ -119,7 +119,7 @@ const StudentCreationPage = () => {
                 titleId: formValues.titleId,
                 statusId: formValues.statusId,
                 branchId: formValues.branchId,
-                courseId: formValues.courseId,
+                // courseId: formValues.courseId,
                 description: formValues.description,
                 parent: studentParentRequestBody,
                 timeSlots: formValues.timeSlots?.map((item: any) => JSON.parse(item) as any)
@@ -289,7 +289,7 @@ const StudentCreationPage = () => {
                             }))}
                         />
                     </Form.Item>
-
+{/* 
                     <Form.Item<FormType> name='courseId' label='Khóa học'>
                         <Select
                             showSearch
@@ -299,7 +299,7 @@ const StudentCreationPage = () => {
                                 label: item.name
                             }))}
                         />
-                    </Form.Item>
+                    </Form.Item> */}
 
                     <Form.Item<FormType> name='timeSlots' label='Ca học'>
                         <TreeSelect
