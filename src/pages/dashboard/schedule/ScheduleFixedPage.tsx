@@ -87,7 +87,7 @@ export const ScheduleFixedPage = () => {
                         console.log('day', day.value, 'time', _index)
 
                         const newClassSample = classSample.filter((classItem) => {
-                            return classItem.dayOfWeekId !== day.value || classItem.timeSlotId !== _index
+                            return classItem.dayOfWeekId !== day.value || classItem.timeSlotId !== (getTimeSlotQuery.data ? getTimeSlotQuery.data[_index].id : 1)
                         })
 
                         if (text === 0) {
