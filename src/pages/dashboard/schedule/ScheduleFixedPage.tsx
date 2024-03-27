@@ -94,7 +94,7 @@ export const ScheduleFixedPage = () => {
                             setClassSample([
                                 ...newClassSample,
                                 {
-                                    timeSlotId: _index,
+                                    timeSlotId: getTimeSlotQuery.data ? getTimeSlotQuery.data[_index].id : 1,
                                     dayOfWeekId: day.value,
                                     branchId: sessionStorage.getItem('branchId') ? parseInt(sessionStorage.getItem('branchId') as string) : 1,
                                 }
@@ -128,7 +128,12 @@ export const ScheduleFixedPage = () => {
             return tempItem;
         });
 
+        console.log('temp', temp)
+        console.log('classSample', classSample)
+
+        
         classSample.forEach((classItem) => {
+            // console.log(getTimeSlotQuery.data.findIndex((timeSlot) => timeSlot.id === classItem.timeSlotId))
             temp[getTimeSlotQuery.data.findIndex((timeSlot) => timeSlot.id === classItem.timeSlotId)][classItem.dayOfWeekId] = 1;
         });
 
