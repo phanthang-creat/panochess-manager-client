@@ -7,7 +7,7 @@ import { generateSlug, handleBeforeUpload, handleChangeUploadImage } from '~/uti
 import { usePostUploadFilesMutation } from '~/stores/server/fileUploadStore'
 import { useGetStudentTitlesQuery } from '~/stores/server/student/studentTitleStore'
 import { useGetStudentStatusesQuery } from '~/stores/server/student/studentStatusStore'
-import { useGetCoursesQuery } from '~/stores/server/course/courseStore'
+// import { useGetCoursesQuery } from '~/stores/server/course/courseStore'
 import { useGetStudentByIdQuery, usePatchStudentMutation } from '~/stores/server/student/studentStore'
 import { PatchStudentRequestBodyType } from '~/types/students/studentType'
 import { useGetGenderQuery } from '~/stores/server/gender/genderStore'
@@ -61,7 +61,7 @@ const StudentEditPage = () => {
     // Stores
     const getStudentTitlesQuery = useGetStudentTitlesQuery()
     const getStudentStatusesQuery = useGetStudentStatusesQuery()
-    const getCoursesQuery = useGetCoursesQuery()
+    // const getCoursesQuery = useGetCoursesQuery()
     const getGenderQuery = useGetGenderQuery()
     const getBranchesQuery = useGetBranchQuery()
     // const postStudentParentMutation = usePostStudentParentMutation()
@@ -72,7 +72,6 @@ const StudentEditPage = () => {
     const patchStudentMutation = usePatchStudentMutation()
     const patchStudentParentMutation = usePatchStudentParentMutation()
     const getTimeSlotsQuery = useGetTimeSlotsQuery()
-
 
     // States
     const [imageUrl, setImageUrl] = useState<string | null>(null)
@@ -109,7 +108,7 @@ const StudentEditPage = () => {
                 titleId: formValues.titleId,
                 statusId: formValues.statusId,
                 branchId: formValues.branchId,
-                courseId: formValues.courseId,
+                // courseId: formValues.courseId,
                 description: formValues.description,
                 timeSlots: formValues.timeSlots?.map((item) => JSON.parse(item as string))
             }
@@ -192,7 +191,7 @@ const StudentEditPage = () => {
             statusId: getStudentByIdQuery.data.statusId,
             parentId: getStudentByIdQuery.data.parentId,
             branchId: getStudentByIdQuery.data.branchId,
-            courseId: getStudentByIdQuery.data.courseId,
+            // courseId: getStudentByIdQuery.data.courseId,
             description: getStudentByIdQuery.data.description,
             timeSlots: getStudentByIdQuery.data.timeSlots?.map((item) => JSON.stringify({
                 dayOfWeek: item.dayOfWeek,
@@ -353,7 +352,7 @@ const StudentEditPage = () => {
                         />
                     </Form.Item>
 
-                    <Form.Item<FormType> name='courseId' label='Khóa học'>
+                    {/* <Form.Item<FormType> name='courseId' label='Khóa học'>
                         <Select
                             showSearch
                             placeholder='Khóa học'
@@ -373,7 +372,7 @@ const StudentEditPage = () => {
                                 label: item.name
                             }))}
                         />
-                    </Form.Item>
+                    </Form.Item> */}
                     {
                         getStudentByIdQuery.data && (
 

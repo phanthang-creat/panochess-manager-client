@@ -23,6 +23,16 @@ const useGetTeacherByIdQuery = (id: string) => {
     })
 }
 
+const useGetTeacherBasicInfoByIdQuery = (id: string) => {
+    return useQuery({
+        queryKey: ['[GET] /teacher/basic', id],
+        queryFn: () => axios.get<
+            GetTeacherQueryItemResponseDataType
+        >(`/teacher/basic/${id}`),
+        select: (data) => data.data
+    })
+}
+
 const usePostTeacherMutation = () => {
     const queryClient = useQueryClient()
     return useMutation({
@@ -57,6 +67,7 @@ const usePatchTeacherMutation = () => {
 export {
     useGetTeachersQuery,
     useGetTeacherByIdQuery,
+    useGetTeacherBasicInfoByIdQuery,
     usePostTeacherMutation,
     usePatchTeacherMutation
 }

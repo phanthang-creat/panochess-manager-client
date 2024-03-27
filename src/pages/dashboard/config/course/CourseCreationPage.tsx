@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button, Checkbox, Form, Input, InputNumber, notification } from 'antd'
-import { PostCourseRequestBodyType, PatchCourseRequestBodyType } from '~/types/courseType'
+import { PostCourseRequestBodyType, PatchCourseRequestBodyType } from '~/types/course/courseType'
 import { useGetCourseByIdQuery, usePatchCourseMutation, usePostCourseMutation } from '~/stores/server/course/courseStore'
 
 const FORM_INITIAL_VALUES: PostCourseRequestBodyType = {

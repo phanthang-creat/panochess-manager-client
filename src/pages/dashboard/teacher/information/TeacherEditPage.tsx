@@ -136,7 +136,7 @@ const TeacherEditPage = () => {
         <div className='flex flex-col items-start'>
             {notificationContextHolder}
 
-            <h1 className='text-xl font-medium mb-4'>Thêm mới giáo viên</h1>
+            <h1 className='text-xl font-medium mb-4'>Chỉnh sửa thông tin giáo viên</h1>
 
             <Form
                 form={form}
@@ -291,12 +291,6 @@ const TeacherEditPage = () => {
                     </Form.Item>
                 </div>
             </Form>
-
-            {/* Teaching history */}
-            <div className='grid grid-flow-row gap-4 grid-cols-1 bg-white p-4 rounded-md shadow-md'>
-                <h1 className='text-lg font-medium mb-4'>Lịch sử giảng dạy</h1>
-            </div>
-
         </div>
     )
 }

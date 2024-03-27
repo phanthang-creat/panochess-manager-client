@@ -8,4 +8,16 @@ interface GetBranchQueryItemResponseDataType {
     updatedAt: string
 }
 
-export type { GetBranchQueryItemResponseDataType }
+interface PostBranchRequestBodyType {
+    name: string
+    slug: string
+    address: string
+    status: number
+}
+
+interface PatchBranchRequestBodyType extends Partial<PostBranchRequestBodyType> {}
+export type {
+    GetBranchQueryItemResponseDataType,
+    PostBranchRequestBodyType,
+    PatchBranchRequestBodyType
+}

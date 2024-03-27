@@ -5,7 +5,7 @@ import { Button, Modal, Table, notification } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { useDeleteCourseMutation, useGetCoursesQuery } from '~/stores/server/course/courseStore'
-import { GetCourseResponseDataType } from '~/types/courseType'
+import { GetCourseResponseDataType } from '~/types/course/courseType'
 
 const CoursePage = () => {
   const navigate = useNavigate()

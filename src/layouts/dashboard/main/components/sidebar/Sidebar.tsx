@@ -14,6 +14,13 @@ const { Sider } = Layout
 
 const MENUS = [
   {
+    key: '/',
+    label: 'Dashboard',
+    // icon: <UserOutlined />,
+    path: ''
+
+  },
+  {
     key: uuidv4(),
     label: 'Học sinh',
     children: [
@@ -41,6 +48,11 @@ const MENUS = [
         key: '/schedule',
         // icon: <UploadOutlined />,
         label: 'Danh sách lớp học'
+      },
+      {
+        key: '/schedule/fixed',
+        // icon: <UploadOutlined />,
+        label: 'Lịch học cố định'
       }
     ]
   },
@@ -182,6 +194,7 @@ const Sidebar: FC<Props> = ({ collapsed }) => {
           navigate(event.key)
         }}
         items={MENUS}
+        
         className='h-[calc(100vh_-_64px)] overflow-auto'
       />
     </Sider>

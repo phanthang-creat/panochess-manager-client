@@ -21,6 +21,10 @@ import { OrderCreationPage } from '~/pages/dashboard/order/OrderCreationPage'
 import ClassroomPage from '~/pages/dashboard/config/classroom/ClassroomPage'
 import ClassroomCreationPage from '~/pages/dashboard/config/classroom/ClassroomCreationPage'
 import TimeSlotPage from '~/pages/dashboard/config/timeSlot/TimeSlotPage'
+import { TeacherHistoryPage } from '~/pages/dashboard/teacher/information/TeacherHistoryPage'
+import { StudentDetailPage } from '~/pages/dashboard/student/information/StudentDetailPage'
+import { ScheduleFixedPage } from '~/pages/dashboard/schedule/ScheduleFixedPage'
+import { BranchPage } from '~/pages/dashboard/branch/BranchPage'
 // Dashboard
 const DashboardMainLayout = lazy(() => import('~/layouts/dashboard/main/MainLayout'))
 const DashboardAuthLayout = lazy(() => import('~/layouts/dashboard/auth/AuthLayout'))
@@ -59,7 +63,7 @@ const routes = [
   {
     path: '/config/branch',
     layout: DashboardMainLayout,
-    component: DashboardStatisticPage,
+    component: BranchPage,
   },
   {
     path: '/config/role',
@@ -169,6 +173,12 @@ const routes = [
   {
     path: '/student/:id',
     layout: DashboardMainLayout,
+    component: StudentDetailPage,
+    public: false
+  },
+  {
+    path: '/student/edit/:id',
+    layout: DashboardMainLayout,
     component: StudentEditPage,
     public: false
   },
@@ -185,6 +195,12 @@ const routes = [
     public: false
   },
   {
+    path: '/teacher/history/:id',
+    layout: DashboardMainLayout,
+    component: TeacherHistoryPage,
+    public: false
+  },
+  {
     path: '/teacher/:id',
     layout: DashboardMainLayout,
     component: TeacherEditPage,
@@ -195,7 +211,13 @@ const routes = [
     layout: DashboardMainLayout,
     component: SchedulePage,
     public: false
-  }
+  },
+  {
+    path: '/schedule/fixed',
+    layout: DashboardMainLayout,
+    component: ScheduleFixedPage,
+    public: false
+  },
 
 ]
 

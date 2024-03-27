@@ -1,5 +1,5 @@
 // import { notification } from "antd";
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { EditOutlined, DeleteOutlined, HistoryOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import { useEffect, useMemo } from 'react'
@@ -57,6 +57,15 @@ export const TeacherListPage = () => {
                         shape='circle'
                         icon={<EditOutlined />}
                         onClick={() => { navigate(`/teacher/${record.id}`) }}
+                    />
+                    <Button
+                        shape='circle'
+                        icon={<HistoryOutlined />}
+                        onClick={() => {
+                            navigate(`/teacher/history/${record.id}`)
+                        }}
+                        // setSelectedItemId(record.id)
+                        // setIsOpenConfirmDeleteModal(true)
                     />
                     <Button
                         shape='circle'
