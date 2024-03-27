@@ -38,6 +38,7 @@ import viDayjs from 'dayjs/locale/vi'
 import { ScheduleOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import { useGetClassSampleQuery } from '~/stores/server/class/classSampleStore'
+import { daysOfWeek } from '~/utils/daysOfWeek'
 
 dayjs.extend(buddhistEra)
 dayjs.locale(viDayjs)
@@ -126,6 +127,7 @@ export const SchedulePage = () => {
     const [defaultEvent, setDefaultEvent] = useState<EventType[] | null>(null)
 
     // queries
+    const getClassSampleQuery = useGetClassSampleQuery()
     const getClassStatusesQuery = useGetClasssStatusesQuery()
     const getTeachersQuery = useGetTeachersQuery()
     const getClassroomQuery = useGetClassroomsQuery()
@@ -133,7 +135,6 @@ export const SchedulePage = () => {
     const getTimeSlotsQuery = useGetTimeSlotsQuery()
     const getClassStudentsQuery = useGetClassStudentsQuery(query)
     const getStudentTimeSlotsQuery = useGetStudentTimeSlotsQuery(studentQuery)
-    const getClassSampleQuery = useGetClassSampleQuery()
 
 
     // mutations
@@ -154,8 +155,8 @@ export const SchedulePage = () => {
             return new EventType(
                 ``,
                 false,
-                dayjs().add(item.dayOfWeekId - day, 'day').set('hour', parseInt(item.timeSlot.start.split(':')[0])).set('minute', parseInt(item.timeSlot.start.split(':')[1])).set('second', 0).toDate(),
-                dayjs().add(item.dayOfWeekId - day, 'day').set('hour', parseInt(item.timeSlot.end.split(':')[0])).set('minute', parseInt(item.timeSlot.end.split(':')[1])).set('second', 0).toDate(),
+                dayjs().add(daysOfWeek[item.dayOfWeekId].viValue - day, 'day').set('hour', parseInt(item.timeSlot.start.split(':')[0])).set('minute', parseInt(item.timeSlot.start.split(':')[1])).set('second', 0).toDate(),
+                dayjs().add(daysOfWeek[item.dayOfWeekId].viValue - day, 'day').set('hour', parseInt(item.timeSlot.end.split(':')[0])).set('minute', parseInt(item.timeSlot.end.split(':')[1])).set('second', 0).toDate(),
                 {
                     id: '0',
                     classroomId: '', // Add the missing property
@@ -180,11 +181,17 @@ export const SchedulePage = () => {
                 }
             )
         })
+        // console.log('defaultEvent', newEvents)
         setDefaultEvent(newEvents);
-
         // setEvents(events.concat(newEvents))
 
     }, [getClassSampleQuery.data])
+
+    const listEvents = useMemo(() => {
+        console.log('defaultEvent', events.concat(defaultEvent?.reverse() || []))
+        // return defaultEvent?.concat(events) || []
+        return defaultEvent?.reverse().concat(events) || []
+    }, [defaultEvent, events])
 
     const handleSubmit = async () => {
         const formValues = form.getFieldsValue()
@@ -195,7 +202,7 @@ export const SchedulePage = () => {
             }
         })
 
-        if (selectedEvent) {
+        if (selectedEvent && selectedEvent.resource.id !== '0') {
             if (!selectedEvent.resource) {
                 return notificationApi.error({
                     message: 'Thao tác thất bại'
@@ -268,8 +275,7 @@ export const SchedulePage = () => {
                                         getClassroomQuery.data?.find((classroom) => classroom.id === formValues.classroomId) ||
                                         selectedEvent.resource.classroom,
                                     classStatus:
-                                        getClassStatusesQuery.data?.find((status) => status.id === formValues.statusId) ||
-                                        selectedEvent.resource.classStatus,
+                                        getClassStatusesQuery.data?.find((status) => status.id === formValues.statusId) || selectedEvent.resource.classStatus,
                                     classTeachers:
                                         getTeachersQuery.data?.data
                                             .filter((teacher) => formValues.classTeachers.includes(teacher.id))
@@ -559,7 +565,7 @@ export const SchedulePage = () => {
                 onView={() => { }} // This is a dummy function to prevent the warning
                 defaultDate={defaultDate}
                 localizer={localizer}
-                events={events.concat(defaultEvent || [])}
+                events={listEvents}
                 style={{ height: 1200 }}
                 culture={'vi'}
                 dayPropGetter={(date) => {
@@ -574,11 +580,46 @@ export const SchedulePage = () => {
                         }
                     }
                 }}
+                eventPropGetter={(event) => {
+                    if (event.resource.id === '0') {
+                        return {
+                            className: 'bg-gray-100 opacity-70 text-gray-500 border !border-gray-100 hover:bg-gray-100 hover:text-gray-500'
+                        }
+                    }
+
+                    if (event.resource.statusId === 2) {
+                        return {
+                            // green
+                            className: 'bg-[#34d399] text-white border !border-[#34d399] shadow-xl hover:bg-[#34d399] !border-l-4 !border-l-[#059669] !border-b-4'
+                        }
+                    }
+
+                    if (event.resource.statusId === 3) {
+                        return {
+                            // green bold
+                            className: 'bg-[#379683] text-white border !border-[#379683] shadow-xl hover:bg-[#379683] !border-l-4 !border-l-[#059669] !border-b-4'
+                        }
+                    }
+
+                    if (event.resource.statusId === 4) {
+                        return {
+                            // red
+                            className: 'bg-[#ef4444] text-white border !border-[#ef4444] shadow-xl hover:bg-[#ef4444] !border-l-4 !border-l-[#b91c1c] !border-b-4'
+                        }
+                    }
+
+                    return {
+                        // shadow left and bottom
+                        className: 'bg-[#fdd247] text-black border !border-[#fdd247] shadow-xl hover:bg-[#fdd247] !border-l-4 !border-l-[#edb500] !border-b-4'
+                    }
+                }}
+                
                 onSelectEvent={onSelectEvent}
                 onSelectSlot={onSelectSlot}
                 selectable
                 formats={formats}
                 timeslots={3}
+                dayLayoutAlgorithm={'overlap'}
             />
             {/* Create Event Modal */}
             <Modal
