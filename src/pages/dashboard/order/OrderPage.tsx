@@ -1,6 +1,6 @@
 // import { notification } from "antd";
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Modal, notification } from 'antd'
+import { Button, Form, Input, notification, Popconfirm, Popover } from 'antd'
 import Table, { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -14,10 +14,10 @@ export const OrderListPage = () => {
 
 
     // const [notificationApi, notificationContextHolder] = notification.useNotification()
-    const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
+    // const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
     const deleteMutation = useDeleteOrderMutation()
     // const getOrderStatusQuery = useGetOrderStatusesQuery()
-    const [isOpenConfirmDeleteModal, setIsOpenConfirmDeleteModal] = useState<boolean>(false)
+    // const [isOpenConfirmDeleteModal, setIsOpenConfirmDeleteModal] = useState<boolean>(false)
     const [query, setQuery] = useState<GetOrderQuery>({
         page: 1,
         take: 10
@@ -75,14 +75,23 @@ export const OrderListPage = () => {
                         icon={<EditOutlined />}
                         onClick={() => { navigate(`/order/${record.id}`) }}
                     />
-                    <Button
-                        shape='circle'
-                        icon={<DeleteOutlined />}
-                        onClick={() => {
-                        setSelectedItemId(record.id)
-                        setIsOpenConfirmDeleteModal(true)
-                        }}
-                    />
+                    <Popover>
+                        <Popconfirm
+                            title='Bạn có chắc chắn muốn xóa đơn hàng này không?'
+                            onConfirm={() => {
+                                handleDeleteMenu(record.id)
+                            }}
+                            okText='Xóa'
+                            cancelText='Hủy'
+                            disabled={record.orderStatus.id !== 1 && record.orderStatus.id !== 3}
+                            >
+                            <Button
+                                shape='circle'
+                                icon={<DeleteOutlined />}
+                                disabled={record.orderStatus.id !== 1 && record.orderStatus.id !== 3}
+                            />
+                        </Popconfirm>
+                    </Popover>
                 </div>
             )
         }
@@ -114,13 +123,11 @@ export const OrderListPage = () => {
     }, [getDataQuery.data])
 
     // Methods
-    const handleDeleteMenu = async () => {
+    const handleDeleteMenu = async (id: string) => {
         try {
-            if (!selectedItemId) {
-                return
-            }
-            await deleteMutation.mutateAsync(selectedItemId)
-            handleCancelDeleting()
+            
+            await deleteMutation.mutateAsync(id)
+
             return notificationApi.success({
                 message: 'Thao tác thành công'
             })
@@ -129,11 +136,6 @@ export const OrderListPage = () => {
                 message: 'Thao tác thất bại'
             })
         }
-    }
-
-    const handleCancelDeleting = () => {
-        setSelectedItemId(null)
-        setIsOpenConfirmDeleteModal(false)
     }
 
     // Memos
@@ -216,18 +218,6 @@ export const OrderListPage = () => {
                       }
                 />
             </div>
-            <Modal
-                title={'Xóa thông tin'}
-                open={isOpenConfirmDeleteModal}
-                maskClosable={false}
-                okText='Hoàn thành'
-                cancelText='Hủy'
-                onOk={handleDeleteMenu}
-                confirmLoading={deleteMutation.isPending}
-                onCancel={handleCancelDeleting}
-            >
-                <div>Hành động này không thể khôi phục. Bạn chắc chắn muốn xóa thông tin này?</div>
-            </Modal>
         </div>
     )
 }
