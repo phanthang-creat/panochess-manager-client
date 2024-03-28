@@ -1,17 +1,35 @@
 // import { notification } from "antd";
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { Button } from 'antd'
+import { Button, notification, Popconfirm } from 'antd'
 import Table, { ColumnsType } from 'antd/es/table'
 import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useGetStudentsQuery } from '~/stores/server/student/studentStore'
+import { useDeleteStudentMutation, useGetStudentsQuery } from '~/stores/server/student/studentStore'
 import { StudentResponseDataType } from '~/types/students/studentType'
 
 export const StudentListPage = () => {
     const navigate = useNavigate()
 
-    // const [notificationApi, notificationContextHolder] = notification.useNotification()
+    const [notificationApi, notificationContextHolder] = notification.useNotification()
     const getDataQuery = useGetStudentsQuery()
+    const deteteStudentMutation = useDeleteStudentMutation()
+
+    const handleDeleteStudent = async (id: string) => {
+        try {
+            await deteteStudentMutation.mutateAsync(id)
+
+            notificationApi.success({
+                message: 'Xóa học viên thành công'
+            })
+
+            getDataQuery.refetch()
+
+        } catch (error) {
+            notificationApi.error({
+                message: 'Xóa học viên thất bại'
+            })
+        }
+    }
 
     const columns: ColumnsType<StudentResponseDataType> = [
         {
@@ -65,14 +83,21 @@ export const StudentListPage = () => {
                         icon={<EditOutlined />}
                         onClick={() => { navigate(`/student/${record.id}`) }}
                     />
-                    <Button
-                        shape='circle'
-                        icon={<DeleteOutlined />}
-                        onClick={() => {
-                        // setSelectedItemId(record.id)
-                        // setIsOpenConfirmDeleteModal(true)
-                        }}
-                    />
+                    <Popconfirm
+                        title='Bạn có chắc chắn muốn xóa học viên này không?'
+                        onConfirm={() => handleDeleteStudent(record.id)}
+                        okText='Có'
+                        cancelText='Không'
+                    >
+                        <Button
+                            shape='circle'
+                            icon={<DeleteOutlined />}
+                            onClick={() => {
+                            // setSelectedItemId(record.id)
+                            // setIsOpenConfirmDeleteModal(true)
+                            }}
+                        />
+                    </Popconfirm>
                 </div>
             )
         }
@@ -105,7 +130,7 @@ export const StudentListPage = () => {
 
     return (
         <div className=''>
-            {/* {notificationContextHolder} */}
+            {notificationContextHolder}
 
             <h1 className='text-xl font-medium mb-4'>Danh sách học viên</h1>
             <div className='flex flex-col items-start gap-4'>

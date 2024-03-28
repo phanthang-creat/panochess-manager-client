@@ -77,11 +77,7 @@ export const OrderCreationPage = () => {
 
             await postMutation.mutateAsync(requestBody)
 
-            notificationApi.success({
-                message: 'Thao tác thành công'
-            })
-
-            return navigate('/order')
+            return navigate('/order/result')
         } catch (error) {
             return notificationApi.error({
                 message: 'Thao tác thất bại'
@@ -487,21 +483,7 @@ export const OrderCreationPage = () => {
                         </Button>
                     </div>
                 </div>
-                {/* <div
-                    className='grid grid-flow-row gap-4 grid-cols-1'
-                >
-                    <Form.Item<FormType> name='description' label='Ghi chú' className='col-span-1 bg-white p-4 rounded-md shadow-md max-h-[300px] overflow-y-auto'>
-                        <Input.TextArea
-                            placeholder='Ghi chú'
-                            autoSize={{ minRows: 10, maxRows: 10 }}
-                        />
-                    </Form.Item>
-                </div> */}
             </Form>
-
-            {/* Before unload */}
-            {/* <BeforeUnload redirectUrl='/order'/> */}
-                
 
         </div>
     )

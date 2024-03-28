@@ -188,7 +188,6 @@ export const SchedulePage = () => {
     }, [getClassSampleQuery.data])
 
     const listEvents = useMemo(() => {
-        console.log('defaultEvent', events.concat(defaultEvent?.reverse() || []))
         // return defaultEvent?.concat(events) || []
         return defaultEvent?.reverse().concat(events) || []
     }, [defaultEvent, events])

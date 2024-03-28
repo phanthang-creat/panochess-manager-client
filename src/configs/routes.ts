@@ -25,6 +25,8 @@ import { TeacherHistoryPage } from '~/pages/dashboard/teacher/information/Teache
 import { StudentDetailPage } from '~/pages/dashboard/student/information/StudentDetailPage'
 import { ScheduleFixedPage } from '~/pages/dashboard/schedule/ScheduleFixedPage'
 import { BranchPage } from '~/pages/dashboard/branch/BranchPage'
+import { OrderEditPage } from '~/pages/dashboard/order/OrderEditPage'
+import { OrderResult } from '~/pages/dashboard/order/OrderResult'
 // Dashboard
 const DashboardMainLayout = lazy(() => import('~/layouts/dashboard/main/MainLayout'))
 const DashboardAuthLayout = lazy(() => import('~/layouts/dashboard/auth/AuthLayout'))
@@ -157,6 +159,16 @@ const routes = [
     path: '/order/creation',
     layout: DashboardMainLayout,
     component: OrderCreationPage,
+  },
+  {
+    path: '/order/result',
+    layout: DashboardMainLayout,
+    component: OrderResult,
+  },
+  {
+    path: '/order/:id',
+    layout: DashboardMainLayout,
+    component: OrderEditPage,
   },
   { 
     path: '/student',

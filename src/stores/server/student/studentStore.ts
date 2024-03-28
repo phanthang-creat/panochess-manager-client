@@ -58,18 +58,20 @@ const usePatchStudentMutation = () => {
     })
 }
 
-// const useDeleteStudentQuery = () => {
-//     return useQuery({
-//         queryKey: ['[DELETE] /students'],
-//         queryFn: () => axios.delete('/students'),
-//         select: (data) => data.data
-//     })
-// }
+const useDeleteStudentMutation = () => {
+    // const queryClient = useQueryClient()
+    return useMutation({
+      mutationKey: ['[DELETE] /students/{id}'],
+      mutationFn: (id: string) => axios.delete(`/students/${id}`),
+      
+    })
+  }
 
 export {
     useGetStudentsQuery,
     useGetStudentTimeSlotsQuery,
     useGetStudentByIdQuery,
     usePostStudentMutation,
-    usePatchStudentMutation
+    usePatchStudentMutation,
+    useDeleteStudentMutation
 }
