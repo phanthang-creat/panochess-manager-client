@@ -53,7 +53,7 @@ export const OrderListPage = () => {
             render: (value) => value.id === 1 ? 
                 <span className='text-red-500'>{value.name}</span>
                  : 
-                value.id === 2 ? 
+                value.id === 3 ? 
                 <span className='text-yellow-500'>{value.name}</span>
                  : 
                 <span className='text-green-500'>{value.name}</span>
